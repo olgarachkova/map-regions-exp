@@ -1,0 +1,197 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Current JS file",
+      "program": "${workspaceFolder}/${relativeFile}",
+      "args": [
+      ],
+      "runtimeArgs": [
+        "--expose-gc"
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Mocha Tests",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "args": [
+      ],
+      "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Electron Main",
+      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
+      "program": "${workspaceFolder}/main.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch via NPM",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run-script",
+        "debug"
+      ],
+      "port": 9229
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "index",
+      "program": "${workspaceFolder}/dest/jscore/core/index.js",
+      "skipFiles": [
+        "<node_internals>/**",
+        // "dest/**",
+      ],
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "__current",
+      "program": "${workspaceFolder}/dest/back/parser/2_base.js",
+      "skipFiles": [
+        "<node_internals>/**",
+        // "dest/**",
+      ],
+      "args": [
+        "1",
+        "1"
+      ],
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "1",
+      "program": "${workspaceFolder}/dest/back/1.js",
+      "sourceMaps": true,
+      "smartStep": true,
+      "skipFiles": [
+        "<node_internals>/**",
+        // "*.js"
+      ],
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "indexLocal",
+      "program": "${workspaceFolder}/dest/back/index.js",
+      "sourceMaps": true,
+      "smartStep": true,
+      "skipFiles": [
+        "<node_internals>/**",
+        // "*.js"
+      ],
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "## fronter",
+      "program": "${workspaceFolder}/dest/jscore/core/_helper/fronter.js",
+      "sourceMaps": true,
+      "smartStep": true,
+      "skipFiles": [
+        "<node_internals>/**",
+        // "*.js"
+      ],
+    },
+    {
+      // interesting ... not holding a port listener
+      "name": "Current TS File",
+      "type": "node",
+      "request": "launch",
+      "args": [
+        "${relativeFile}"
+      ],
+      "runtimeArgs": [
+        // "--nolazy",
+        "-r",
+        "ts-node/register",
+        "--expose-gc"
+      ],
+      "cwd": "${workspaceRoot}",
+      // "protocol": "inspector", // ??? what is it?
+      "sourceMaps": true,
+      "smartStep": true,
+      // "internalConsoleOptions": "openOnSessionStart",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+    },
+    {
+      "name": "Current Jest TS File",
+      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "type": "node",
+      "request": "launch",
+      "args": [
+        "${relativeFile}"
+      ],
+      "runtimeArgs": [
+        "-r",
+        "ts-node/register"
+      ],
+      "cwd": "${workspaceRoot}",
+      "protocol": "inspector",
+      "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Current Mocha TS File",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha", 
+      "sourceMaps": true,
+      "smartStep": true,
+      "args": [
+        "${relativeFile}",
+        "--no-config",
+        "-r",
+        "ts-node/register",
+        "--timeout",
+        "60000"
+      ],
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Mocha TS Concrete File",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha", 
+      "sourceMaps": true,
+      "smartStep": true,
+      "args": [
+        "./src/jscore/db/test/statement.test.ts", 
+        "--no-config",
+        "-r",
+        "ts-node/register",
+        "--timeout",
+        "60000"
+      ],
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Mocha TS Concrete File via JS",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha", 
+      "sourceMaps": true,
+      "smartStep": true,
+      "args": [
+        "./dist/jscore/db/test/statement.mysql.test.js", 
+        "--no-config",
+        "--timeout",
+        "60000"
+      ],
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+    }
+  ]
+}
