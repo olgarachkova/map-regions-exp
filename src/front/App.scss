@@ -26,11 +26,12 @@
 }
 
 .district:hover {
-    fill: red;
+    fill: rgba(255, 0, 0, 1);
 }
 
 .district-select {
-    stroke: blue;
+    fill: rgba(255, 0, 0, 0.4);
+    stroke: red;
     stroke-width: 5;
 }
 
