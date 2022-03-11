@@ -23,17 +23,17 @@
 .district {
     fill: transparent;
     stroke: black;
-    transition: 2s linear;
+    transition: 1s ease-in-out;
 }
 
 .district:hover {
-    animation: colorswitch 5s linear infinite alternate;
-    stroke-width: 5;
+    fill: #61dafb;
+    stroke-dasharray: 10;
+    animation: dash 5s linear infinite;
 }
 
 .district-select {
-    fill: rgba(255, 0, 0, 0.4);
-    stroke: rgb(196, 34, 34);
+    fill: #61dafb;
     transition: 2s linear;
 }
 
@@ -46,37 +46,8 @@
     border: 1px solid;
 }
 
-@keyframes colorswitch {
-    0% {
-      fill: red;
-      stroke: red;
+@keyframes dash {
+    to {
+      stroke-dashoffset: 300;
     }
-    15% {
-      fill: orange;
-      stroke: orange;
-    }
-    30% {
-      fill: yellow;
-      stroke: yellow;
-    }
-    45% {
-      fill: green;
-      stroke: green;
-    }
-    60% {
-      fill: aqua;
-      stroke: aqua;
-    }
-    75% {
-      fill: blue;
-      stroke: blue;
-    }
-    90% {
-      fill: purple;
-      stroke: purple;
-    }
-    100% {
-      fill: magenta;
-      stroke: magenta;
-    }
-  }
+}
