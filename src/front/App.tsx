@@ -20,6 +20,7 @@ export function App(props: IAppProps) {
     let [districtsForRegion, setDistrictsForRegion] = useState(null);
     let [region, setRegion] = useState(null);
     const [info, setInfo] = useState('');
+    const [selectedDistricts, setSelectedDistricts] = useState([]);
 
     useEffect(() => {
         // РАБОТА С СЕРВЕРОМ
@@ -70,10 +71,10 @@ export function App(props: IAppProps) {
         let minLng = Math.min(...second);
         let maxLng = Math.max(...second);
 
-        console.log(minLat)
+        /*console.log(minLat)
         console.log(maxLat)
         console.log(minLng)
-        console.log(maxLng)
+        console.log(maxLng)*/
 
         let polygonPoints = [];
 
@@ -95,15 +96,39 @@ export function App(props: IAppProps) {
 
         let points = polygonPoints[0];
 
+        const handleClick = (e: React.SyntheticEvent<EventTarget>): void => {
+            if (e.target.classList.contains('district')) {
+                if (e.ctrlKey) {
+                    e.target.classList.add('district-select');
+                    setSelectedDistricts([...selectedDistricts, e.target]);
+                } else {
+                    selectedDistricts.forEach(element => {
+                        element.classList.remove('district-select');
+                    });
+                    e.target.classList.add('district-select');
+                    setSelectedDistricts([e.target]);
+                }
+            } else {
+                selectedDistricts.forEach(element => {
+                    element.classList.remove('district-select');
+                });
+                setSelectedDistricts([]);
+            }
+        }
+
         return (
             <>
-                <div className="App">
+                <div
+                    className="App"
+                    onClick={handleClick}
+                >
                     <svg
                         // viewBox={`0 0 ${width} ${height}`}
                         xmlns="http://www.w3.org/2000/svg"
                         width={width}
                         height={height}
                         className='svg'
+
                     >
                         {/* <linearGradient id="gradlinear">
                             <stop offset="0%" stopColor="crimson"
@@ -115,7 +140,6 @@ export function App(props: IAppProps) {
                         </linearGradient> */}
                         <polygon
                             points={points}
-                            // onClick={handleClick}
                             className='region'
                         >
                         </polygon>

@@ -23,9 +23,15 @@
 .district {
     fill: transparent;
     stroke: black;
-    /* stroke-dasharray: 10;
-  animation: dash 5s linear infinite;
-  transition: 1s ease-in-out; */
+}
+
+.district:hover {
+    fill: red;
+}
+
+.district-select {
+    stroke: blue;
+    stroke-width: 5;
 }
 
 .region {
