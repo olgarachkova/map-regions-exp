@@ -1,8 +1,10 @@
 .App {
+    margin: 100px;
     text-align: center;
     display: flex;
     height: 1000px;
     width: 1500px;
+    transform: perspective(300px) rotateX(15deg);
 }
 
 .App-header {
@@ -27,6 +29,7 @@
 
 .district:hover {
     fill: rgba(255, 0, 0, 1);
+    filter:url(#color-shadow);
 }
 
 .district-select {
@@ -42,4 +45,12 @@
 
 .svg {
     border: 1px solid;
+}
+
+.rect {
+    fill: transparent;
+    stroke: black;
+    stroke-width: 1px;
+    shape-rendering: crispEdges;
+    filter:url(#color-shadow);
 }

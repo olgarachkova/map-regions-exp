@@ -50,7 +50,7 @@ export function App(props: IAppProps) {
         const width = 1000;
         let lngSpan = bbLngMax - bbLngMin;
         let latSpan = bbLatMax - bbLatMin;
-        let height = Math.round(width * latSpan / lngSpan) / Math.cos(Math.PI / 180 * bbLatMin); //  
+        let height = Math.round(width * latSpan / lngSpan / Math.cos(Math.PI / 180 * bbLatMin));
         let pixelDims = { width, height };
 
         let mapLatLngBounds = { latMin: bbLatMin, latMax: bbLatMax, lngMin: bbLngMin, lngMax: bbLngMax };
@@ -130,6 +130,92 @@ export function App(props: IAppProps) {
                         className='svg'
 
                     >
+                        {/* Коллекция фильтров для теней. Копипаст с https://codepen.io/sol0mka/pen/kNOyzb/6eca814eda8ec7e758d0feab628bd390 */}
+						<filter id='inset-shadow' data-iconmelon='filter:96c25f4e7a8a5b39d6df22c349dbaf39' >
+                            <feOffset
+                                dx='0'
+                                dy='0'
+                            />
+                            <feGaussianBlur
+                                stdDeviation='1'
+                                result='offset-blur'
+                            />
+                            <feComposite
+                                operator='out'
+                                in='SourceGraphic'
+                                in2='offset-blur'
+                                result='inverse'
+                            />
+                            <feFlood
+                                flood-color='black'
+                                flood-opacity='.95'
+                                result='color'
+                            />
+                            <feComposite
+                                operator='in'
+                                in='color'
+                                in2='inverse'
+                                result='shadow'
+                            />
+                            <feComposite
+                                operator='over'
+                                in='shadow'
+                                in2='SourceGraphic'
+                            />
+                        </filter>
+
+                        <filter id='emboss' x="-25%" y="-25%" width="150%" height="150%">
+                            <feOffset in="SourceAlpha" dx="0.16666666666666666" dy="0.8333333333333334" result="17"></feOffset>
+                            <feGaussianBlur stdDeviation="0.5" in="17" result="18"></feGaussianBlur>
+                            <feSpecularLighting surfaceScale="1" specularConstant="0.9" specularExponent="15" in="18" result="19">
+                                <fePointLight x="-1000" y="-5000" z="300"></fePointLight>
+                            </feSpecularLighting>
+                            <feComposite in="19" in2="SourceAlpha" operator="in" result="20"></feComposite>
+                            <feOffset in="SourceAlpha" dx="-0.16666666666666666" dy="-0.8333333333333334" result="21"></feOffset>
+                            <feGaussianBlur stdDeviation="0.5" in="21" result="22"></feGaussianBlur>
+                            <feSpecularLighting surfaceScale="1" specularConstant="1.8" specularExponent="8" in="22" result="23">
+                                <fePointLight x="100" y="5000" z="300"></fePointLight>
+                            </feSpecularLighting>
+                            <feComposite in="23" in2="SourceAlpha" operator="in" result="24"></feComposite>
+                            <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .85 0" in="24" result="25"></feColorMatrix>
+                            <feComposite k1="0" k2="0.8" k3="0.5" k4="0" in="20" in2="25" operator="arithmetic" result="26"></feComposite>
+                            <feMerge in="26" result="27">
+                                <feMergeNode in="SourceGraphic"></feMergeNode>
+                                <feMergeNode in="26"></feMergeNode>
+                            </feMerge>
+                        </filter>
+                        <filter id='blurry' x="-200%" y="-200%" width="400%" height="400%">
+                            <feGaussianBlur in="SourceGraphic" stdDeviation="1" />
+                        </filter>
+
+                        <filter id='color-shadow' color-interpolation-filters="sRGB">
+                            <feComponentTransfer in="SourceGraphic">
+                                <feFuncR type="discrete" tableValues=".5" />
+                                <feFuncG type="discrete" tableValues=".5" />
+                                <feFuncB type="discrete" tableValues=".5" />
+                            </feComponentTransfer>
+                            <feGaussianBlur stdDeviation=".85" />
+                            <feOffset dx="3" dy="3" result="shadow" />
+                            <feComposite in="SourceGraphic" in2="shadow" operator="over" />
+                        </filter>
+
+                        <filter id='color-shadow2' color-interpolation-filters="sRGB">
+                            <feOffset dx="1" dy="1" />
+                            <feGaussianBlur stdDeviation=".85" />
+                            <feColorMatrix type="matrix" values="0 0 0 0 .2, 1 0 0 0 1, 1 0 0 0 .75, 0 0 0 1 0" result="shadow" />
+                            <feMerge>
+                                <feMergeNode in="shadow" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                        <filter id="f3" x="0" y="0" width="200%" height="200%">
+                            <feOffset result="offOut" in="SourceAlpha" dx="10" dy="10" />
+                            <feGaussianBlur result="blurOut" in="offOut" stdDeviation="10" />
+                            <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
+                        </filter>
+                        <filter id="shadow3">
+                            <feDropShadow dx="4" dy="4" stdDeviation="0" flood-color="black" flood-opacity="0.5" />
+                        </filter>
                         {/* <linearGradient id="gradlinear">
                             <stop offset="0%" stopColor="crimson"
                                 className="stop-1" />
@@ -164,6 +250,14 @@ export function App(props: IAppProps) {
                                 />
                             }
                         })}
+                        {/* <rect
+                            x="800"
+                            y="400"
+                            width="150"
+                            height="150"
+                            className="rect"
+                        /> */}
+
                     </svg>
                     <div className='infoblock'>{info}</div>
                 </div>
