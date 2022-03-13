@@ -5,7 +5,7 @@ import District from './District';
 import { latlngToPx } from './func';
 
 import districts from '../mid/districts.json';
-import regions from '../mid/regions.json';
+import regions from '../mid/regions_nsk.json';
 
 interface IAppProps {
     regionId: number
