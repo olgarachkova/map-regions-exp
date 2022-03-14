@@ -130,14 +130,27 @@ export function App(props: IAppProps) {
                         className='svg'
 
                     >
-                        {/* <linearGradient id="gradlinear">
-                            <stop offset="0%" stopColor="crimson"
-                                className="stop-1" />
-                            <stop offset="50%" stopColor="gold"
-                                className="stop-2" />
-                            <stop offset="100%" stopColor="teal"
-                                className="stop-3" />
-                        </linearGradient> */}
+                        <defs>
+                            <pattern id="pattern1"
+                                x="10" y="10" width="25" height="25"
+                                patternUnits="userSpaceOnUse"
+                            >
+
+                                <circle cx="10" cy="10" r="10" className='pattern1' />
+
+                            </pattern>
+
+                            <pattern id="pattern2"
+                                x="0" y="0" width="25" height="25"
+                                patternUnits="userSpaceOnUse"
+                                patternTransform="rotate(35)"
+                            >
+
+                                <rect x="0" y="15" width="50" height="50" className='pattern2' />
+
+                            </pattern>
+                        </defs>
+
                         <polygon
                             points={points}
                             className='region'

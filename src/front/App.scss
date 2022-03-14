@@ -27,11 +27,12 @@
 }
 
 .district:hover {
-    fill: #61dafb;
+    fill: url(#pattern2);
+    transition: 2s linear;
 }
 
 .district-select {
-    fill: #61dafb;
+    fill: url(#pattern1);
     stroke: blue;
     stroke-width: 5;
     transition: 2s linear;
@@ -40,6 +41,16 @@
 .region {
     fill: transparent;
     stroke: blueviolet;
+}
+
+.pattern1 {
+    fill: #0000ff;
+    transition: 2s linear;
+}
+
+.pattern2 {
+    fill: #61dafb;
+    transition: 2s linear;
 }
 
 .svg {
