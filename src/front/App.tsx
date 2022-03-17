@@ -204,23 +204,6 @@ export function App(props: IAppProps) {
                         } else { // for tests
                             coords = region.coords;
                         }
-                        let polygonPoints = [];
-
-                        if (region.objectType === 'Polygon') {
-                            let geoPoints = coords[0].map(item => {
-                                return latlngToPx({ lat: item[1], lng: item[0] }, pixelDims, mapLatLngBounds);
-                            }).join(' ');
-
-                            polygonPoints.push(geoPoints);
-                        } else {
-                            coords.forEach((crds) => {
-                                let geoPoints = crds[0].map(item => {
-                                    return latlngToPx({ lat: item[1], lng: item[0] }, pixelDims, mapLatLngBounds);
-                                }).join(' ');
-
-                                polygonPoints.push(geoPoints);
-                            });
-                        }
 
                         return <District
                             coords={coords}
@@ -231,11 +214,14 @@ export function App(props: IAppProps) {
                             setInfo={setInfo}
                         />
                     })}
-                    <polygon
-                        points={riverPolygonPoints}
-                        className='river'
-
-                    />
+                    {riverPolygonPoints.map((points, idx) =>
+                        <polyline
+                            points={points}
+                            key={'river' + idx}
+                            className='river'
+                        />
+                    )
+                    }
 
                 </svg>
             </div>
