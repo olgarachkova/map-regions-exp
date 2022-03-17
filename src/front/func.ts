@@ -50,5 +50,5 @@ export function latlngToPx(
     const coefY = pixelDims.height / (latLngBounds.latMax - latLngBounds.latMin);
     const viewboxCurrentX = (point.lng - latLngBounds.lngMin) * coefX;
     const viewboxCurrentY = (point.lat - latLngBounds.latMin) * coefY;
-    return [viewboxCurrentX, viewboxCurrentY];
+    return [viewboxCurrentX, pixelDims.height - viewboxCurrentY];
 }

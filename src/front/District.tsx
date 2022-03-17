@@ -2,7 +2,6 @@ import React from 'react';
 
 import { IDistrict, latlngToPx } from './func';
 
-// export const District = (props: IDistrict) => {
 export function District(props: IDistrict) {
     let { coords, lineType, mapLatLngBounds, pixelDims, cssClassName } = props;
 
