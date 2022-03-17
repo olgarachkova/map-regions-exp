@@ -19,6 +19,7 @@ export function App(props: IAppProps) {
 
     let [districtsForRegion, setDistrictsForRegion] = useState(null);
     let [regions, setRegions] = useState(null);
+    let [river, setRiver] = useState(null);
     const [info, setInfo] = useState('');
     const [selectedDistricts, setSelectedDistricts] = useState([]);
 
@@ -42,6 +43,7 @@ export function App(props: IAppProps) {
 
         setDistrictsForRegion(districts);
         setRegions(Object.values(regions_russia));
+        setRiver(...irtysh);
     }, [regionId]);
 
     let [bbLatMin, bbLatMax, bbLngMin, bbLngMax] = [41, 82.1, 19, 180];
@@ -75,6 +77,26 @@ export function App(props: IAppProps) {
     }
 
     if (regions) {
+
+        let riverCoords;
+        if (typeof river.geojson.coordinates === 'string') {
+            riverCoords = JSON.parse(river.geojson.coordinates);
+        } else {
+            riverCoords = river.geojson.coordinates;
+        }
+
+        let riverPolygonPoints = [];
+        riverCoords.forEach((crds) => {
+            let riverGeoPoints = crds.map(item => {
+                return latlngToPx({ lat: item[1], lng: item[0] }, pixelDims, mapLatLngBounds);
+            }).join(' ');
+
+            riverPolygonPoints.push(riverGeoPoints);
+        });
+        console.log(riverPolygonPoints);
+
+
+
 
         return (
             <div
@@ -209,6 +231,12 @@ export function App(props: IAppProps) {
                             setInfo={setInfo}
                         />
                     })}
+                    <polygon
+                        points={riverPolygonPoints}
+                        className='river'
+
+                    />
+
                 </svg>
             </div>
         );
