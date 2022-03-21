@@ -26,9 +26,29 @@ export interface IBBox {
     lngMax: number
 }
 
-export interface IDistrict {
+export interface ICoordsBaseRaw {
+    coords: string
+}
+
+export interface ICoordsBase {
+    coords: IPolyline | IMultiPolyline
+}
+
+export interface ICoordsSecondary {
+    type: 'Polygon' | 'MultiPolygon',
+    mapLatLngBounds?: IBBox
+}
+
+export interface IGeoSquare extends ICoordsBase, ICoordsSecondary {
+
+}
+
+export interface IGeoSquareRaw extends ICoordsBaseRaw, ICoordsSecondary {
+
+}
+
+export interface IGeoSquareToShow extends IGeoSquare {
     coords: IPolyline | IMultiPolyline,
-    lineType: 'Polygon' | 'MultiPolygon'
     pixelDims: {
         width: number,
         height: number

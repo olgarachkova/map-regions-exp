@@ -1,60 +1,140 @@
 import './App.scss';
 
 import React, { useState, useEffect } from 'react';
-import District from './District';
-import { latlngToPx } from './func';
+import { latlngToPx, IGeoSquare, IGeoSquareRaw } from './func';
 
-import districts from '../mid/districts.json';
+// import districts from '../mid/districts.json';
 //import regions_nsk from '../mid/regions_nsk.json';
-import regions_russia from '../mid/regions.json';
+// import regions_russia from '../mid/regions.json';
 import irtysh from '../mid/irtysh.json';
+import GeoSquareObj from './GeoSquareObj';
+
+const host = 'http://localhost:8340/';
 
 interface IAppProps {
-    regionId: number
+    // countryId?: number,
+    regionId?: number
 }
+
+function getBoundsFromElementsSquareHier(elementsSquareHier: IGeoSquareRaw[][]) {
+    let res = {
+        latMin: Infinity,
+        latMax: -Infinity,
+        lngMin: Infinity,
+        lngMax: -Infinity
+    };
+
+    function workLayer(arr) {
+        arr.forEach(item => {
+            let lat = item[1];
+            let lng = item[0];
+
+            if (lat < res.latMin) {
+                res.latMin = lat
+            }
+
+            if (lat > res.latMax) {
+                res.latMax = lat
+            }
+
+            if (lng < res.lngMin) {
+                res.lngMin = lng
+            }
+
+            if (lng > res.lngMax) {
+                res.lngMax = lng
+            }
+        });
+    }
+
+    for (let i = 0; i < 1; i++) { // пока только с первого слоя
+        let layer = elementsSquareHier[i]
+
+        for (let j = 0; j < layer.length; j++) { // 
+            let obj = layer[j]
+            let coords = JSON.parse(obj.coords);
+            if (obj.type === 'Polygon') {
+                workLayer(coords[0])
+            } else {
+                coords.forEach((partCoords) => {
+                    workLayer(partCoords[0])
+                });
+            }
+        }
+    }
+
+    return res;
+}
+
+function getCSSClassNameFromIndex(scaleMode: TScaleMode, i: number) {
+    let res
+
+    if (scaleMode === 'country') {
+        if (i === 0) {
+            res = 'country'
+        } else { // = 1
+            res = 'region'
+        }
+    } else {
+        if (i === 0) {
+            res = 'region'
+        } else { // = 1
+            res = 'district'
+        }
+    }
+
+    return res
+}
+
+type TScaleMode = 'country' | 'region';
 
 export function App(props: IAppProps) {
 
     let regionId = props.regionId;
 
-    let [districtsForRegion, setDistrictsForRegion] = useState(null);
-    let [regions, setRegions] = useState(null);
-    let [river, setRiver] = useState(null);
+    const [elementsSquareHier, setElementsSqaureHier] = useState<IGeoSquareRaw[][]>([null, null]);
+    // let [river, setRiver] = useState<number>(0);
     const [info, setInfo] = useState('');
+    const [scaleMode, setScaleMode] = useState<TScaleMode>(regionId ? 'region' : 'country');
     const [selectedDistricts, setSelectedDistricts] = useState([]);
+
+    function fillData(urlArr: string[]) {
+        urlArr.forEach((url, i) => {
+            fetch(url).then(resp => {
+                resp.json().then(json => {
+                    setElementsSqaureHier((oldElementsSquareHier) => {
+                        let newElementsSquareHier = [...oldElementsSquareHier];
+                        newElementsSquareHier[i] = Array.isArray(json) ? json : [json];
+                        return newElementsSquareHier;
+                    })
+                });
+            });
+        })
+    }
 
     useEffect(() => {
         // РАБОТА С СЕРВЕРОМ
-        // let url = 'http://localhost:8340/districts/' + regionId;
-        // fetch(url).then(resp => {
-        //     resp.json().then(json => {
-        //         let t = 1;
-        //         setDistrictsForRegion(json);
-        //     });
-        // });
+        let urls;
+        if (regionId) {
+            urls = [host + 'region/' + regionId, host + 'districts/' + regionId];
+        } else {
+            urls = [host + 'country/192', host + 'regions'];
+        }
 
-        // let url1 = 'http://localhost:8340/region/' + regionId;
-        // fetch(url1).then(resp => {
-        //     resp.json().then(json => {
-        //         let t = 1;
-        //         setRegion(json);
-        //     });
-        // });
+        fillData(urls);
 
-        setDistrictsForRegion(districts);
-        setRegions(Object.values(regions_russia));
-        setRiver(...irtysh);
+        // setDistrictsForRegion(districts);
+        // setRegions(Object.values(regions_russia));
+
+        // setRiver(...irtysh);
     }, [regionId]);
 
-    let [bbLatMin, bbLatMax, bbLngMin, bbLngMax] = [41, 82.1, 19, 180];
+    // let [bbLatMin, bbLatMax, bbLngMin, bbLngMax] = [41, 82.1, 19, 180]; // Russia
+
     const width = 1500;
     const height = 800;
-    let lngSpan = bbLngMax - bbLngMin;
-    let latSpan = bbLatMax - bbLatMin;
     //let height = Math.round(width * latSpan / lngSpan / Math.cos(Math.PI / 180 * bbLatMin));
     let pixelDims = { width, height };
-
-    let mapLatLngBounds = { latMin: bbLatMin, latMax: bbLatMax, lngMin: bbLngMin, lngMax: bbLngMax };
 
     const handleClick = (e: React.SyntheticEvent<EventTarget>): void => {
         if (e.target.classList.contains('district')) {
@@ -76,27 +156,24 @@ export function App(props: IAppProps) {
         }
     }
 
-    if (regions) {
+    let isReady = true;
 
-        let riverCoords;
-        if (typeof river.geojson.coordinates === 'string') {
-            riverCoords = JSON.parse(river.geojson.coordinates);
-        } else {
-            riverCoords = river.geojson.coordinates;
-        }
+    for (let i = 0; i < elementsSquareHier.length; i++) {
+        isReady = elementsSquareHier[i] && isReady;
+    }
 
-        let riverPolygonPoints = [];
-        riverCoords.forEach((crds) => {
-            let riverGeoPoints = crds.map(item => {
-                return latlngToPx({ lat: item[1], lng: item[0] }, pixelDims, mapLatLngBounds);
-            }).join(' ');
+    if (isReady) {
+        let mapLatLngBounds = getBoundsFromElementsSquareHier(elementsSquareHier);
 
-            riverPolygonPoints.push(riverGeoPoints);
-        });
-        console.log(riverPolygonPoints);
+        let lngSpan = mapLatLngBounds.lngMax - mapLatLngBounds.lngMin;
+        let latSpan = mapLatLngBounds.latMax - mapLatLngBounds.latMin;
 
-
-
+        // let riverCoords;
+        // if (typeof river.geojson.coordinates === 'string') {
+        //     riverCoords = JSON.parse(river.geojson.coordinates);
+        // } else {
+        //     riverCoords = river.geojson.coordinates;
+        // }
 
         return (
             <div
@@ -108,8 +185,6 @@ export function App(props: IAppProps) {
                     width={width}
                     height={height}
                     className='svg'
-
-
                 >
                     <filter id='inset-shadow' data-iconmelon='filter:96c25f4e7a8a5b39d6df22c349dbaf39' >
                         <feOffset
@@ -197,46 +272,57 @@ export function App(props: IAppProps) {
                         <feDropShadow dx="4" dy="4" stdDeviation="0" floodColor="black" floodOpacity="0.5" />
                     </filter>
 
-                    {regions.map((region) => {
-                        let coords;
-                        if (typeof region.coords === 'string') {
-                            coords = JSON.parse(region.coords);
-                        } else { // for tests
-                            coords = region.coords;
-                        }
-                        let polygonPoints = [];
+                    <text>Qwerty</text>
 
-                        if (region.objectType === 'Polygon') {
-                            let geoPoints = coords[0].map(item => {
-                                return latlngToPx({ lat: item[1], lng: item[0] }, pixelDims, mapLatLngBounds);
-                            }).join(' ');
+                    {elementsSquareHier.map((layer, i) => {
+                        return layer.map((squareObj, j) => {
+                            let coords;
+                            if (typeof squareObj.coords === 'string') {
+                                coords = JSON.parse(squareObj.coords);
+                            } else { // for tests // @@##
+                                coords = squareObj.coords;
+                            }
 
-                            polygonPoints.push(geoPoints);
-                        } else {
-                            coords.forEach((crds) => {
-                                let geoPoints = crds[0].map(item => {
+                            if (!coords) { // @@## такого не должно быть при норм. базе
+                                return null;
+                            }
+
+                            let polygonPoints = [];
+
+                            if (squareObj.type === 'Polygon') {
+                                let geoPoints = coords[0].map(item => {
                                     return latlngToPx({ lat: item[1], lng: item[0] }, pixelDims, mapLatLngBounds);
                                 }).join(' ');
 
                                 polygonPoints.push(geoPoints);
-                            });
-                        }
+                            } else {
+                                coords.forEach((crds) => {
+                                    let geoPoints = crds[0].map(item => {
+                                        return latlngToPx({ lat: item[1], lng: item[0] }, pixelDims, mapLatLngBounds);
+                                    }).join(' ');
 
-                        return <District
-                            coords={coords}
-                            lineType={region.objectType}
-                            pixelDims={pixelDims}
-                            mapLatLngBounds={mapLatLngBounds}
-                            cssClassName='district'
-                            setInfo={setInfo}
-                        />
+                                    polygonPoints.push(geoPoints);
+                                });
+                            }
+
+                            let cssClassName = getCSSClassNameFromIndex(scaleMode, i);
+
+                            // key={i+'-'+j}
+                            
+                            return <GeoSquareObj
+                                coords={coords}
+                                type={squareObj.type}
+                                pixelDims={pixelDims}
+                                mapLatLngBounds={mapLatLngBounds}
+                                cssClassName={cssClassName}
+                                setInfo={setInfo}
+                            />
+                        })
                     })}
-                    <polygon
+                    {/* <polygon
                         points={riverPolygonPoints}
                         className='river'
-
-                    />
-
+                    /> */}
                 </svg>
             </div>
         );
