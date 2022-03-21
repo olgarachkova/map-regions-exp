@@ -7,9 +7,9 @@ SET dirBase=%~dp0\src\back\
 SET destFile=%dirBase%\ignoreVCS\ignoreCfg.ts
 SET srcFile=%dirBase%\local\ignoreCfg.ts
 
-IF NOT EXIST "%destFile%" (
-    copy "%srcFile%" "%destFile%"
-)
+@REM IF NOT EXIST "%destFile%" (
+@REM     copy "%srcFile%" "%destFile%"
+@REM )
 
 CALL init_1_npmi_src.bat
 
