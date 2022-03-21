@@ -2,9 +2,10 @@
     margin: 100px;
     text-align: center;
     display: flex;
-    height: 1000px;
-    width: 1500px;
-    transform: perspective(300px) rotateX(15deg);
+    //height: 1000px;
+    //width: 1500px;
+    //transform: perspective(300px) rotateX(15deg);
+    
 }
 
 .App-header {
@@ -46,6 +47,7 @@
 
 .svg {
     border: 1px solid;
+    //transform-origin: 0 0;
 }
 
 .rect {
