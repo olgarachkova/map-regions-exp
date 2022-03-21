@@ -74,6 +74,30 @@ async function main() {
         }
     });
 
+    // let dirFront = __dirname + '/../front/';
+    // let index.css
+
+    // app.post('/', async function (req, res) {
+    //     let timesFromCookie = req.cookies['isFilesChanged'];
+    
+    //     [
+    //         fs.promises.stat(__dirname + '/../front/index.css'),
+    //         fs.promises.stat(__dirname + '/../front/index.js')
+    //     ]
+
+    //     let stats = await Promise.allSettled(
+    //     );
+    
+    //     let timesLocal = [0,1].map(v => (stats[v] as any)?.value.mtimeMs);
+    //     let timesLocalStr = JSON.stringify(timesLocal);
+    //     if (timesFromCookie === undefined || timesLocalStr !== timesFromCookie) {
+    //         res.cookie('isFilesChanged', timesLocalStr);
+    //         res.end('1');
+    //     } else {
+    //         res.end('0');
+    //     }
+    // });
+
     app.use(express.static(path.resolve(__dirname + '/../../front')));
 
     httpServer.listen(process.env.PORT);
