@@ -27,7 +27,7 @@ async function main() {
     });
 
     app.get('/country/(:id)', async function (req, res) {
-        let row = await stmt.fetchRow("SELECT id, name FROM country WHERE id = " + sql(req.params.id));
+        let row = await stmt.fetchRow("SELECT id, name, type, coords FROM country WHERE id = " + sql(req.params.id));
         if (row) {
             res.json(row);
         } else {
@@ -36,7 +36,7 @@ async function main() {
     });
 
     app.get('/regions', async function (req, res) {
-        let row = await stmt.fetchRow("SELECT * FROM border_regions");
+        let row = await stmt.fetchList("SELECT * FROM border_region");
         // let row = await stmt.fetchRow("SELECT regionId, name FROM regions");
         if (row) {
             res.json(row);
