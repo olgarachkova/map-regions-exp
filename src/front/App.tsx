@@ -23,9 +23,9 @@ export function App(props: IAppProps) {
 
 
     const mapLatLngBounds = { latMin: bbLatMin, latMax: bbLatMax, lngMin: bbLngMin, lngMax: bbLngMax };
-    const width = 1500;
+    const cartWidth = 1500;
     const heightCoef = latSpan / lngSpan / Math.cos(Math.PI / 180 * bbLatMin)
-    const height = width * heightCoef;
+    const cartHeight = cartWidth * heightCoef;
 
     const [districtsForRegion, setDistrictsForRegion] = useState(null);
     const [regions, setRegions] = useState(null);
@@ -34,8 +34,8 @@ export function App(props: IAppProps) {
     const [selectedDistricts, setSelectedDistricts] = useState([]);
     const [rotateX, setRotateX] = useState(0);
     const [scale, setScale] = useState(1);
-    /*const [width, setWidth] = useState(startWidth);
-    const [height, setHeight] = useState(startHeight);*/
+    const [width, setWidth] = useState(cartWidth);
+    const [height, setHeight] = useState(cartHeight);
 
     let pixelDims = { width, height };
 
@@ -71,7 +71,8 @@ export function App(props: IAppProps) {
     }
 
     const handleZoom = (add: number): void => {
-        setScale(prev => prev + add)
+        setWidth(prev => prev + add);
+        setHeight(prev => prev + add * heightCoef);
     }
 
     if (regions) {
@@ -99,17 +100,17 @@ export function App(props: IAppProps) {
                     className="App"
                     onClick={handleClick}
                     onWheel={(e: React.SyntheticEvent<EventTarget>) => {
-                        handleZoom(e.deltaY * 0.001);
+                        handleZoom(e.deltaY);
                     }}
                     style={{
-                        minHeight: `${height}px`,
-                        minWidth: `${width}px`
+                        height: `${cartHeight}px`,
+                        width: `${cartWidth}px`
                     }}
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        width={width}
-                        height={height}
+                        width={cartWidth}
+                        height={cartHeight}
                         className='svg'
                         style={{
                             transform: `perspective(300px) rotateX(${rotateX}deg) scale(${scale})`,
@@ -235,8 +236,8 @@ export function App(props: IAppProps) {
                             <button onClick={handleRotate(-1)}>Rotate -</button>
                         </div>
                         <div>
-                            <button onClick={() => handleZoom(0.1)}>Zoom +</button>
-                            <button onClick={() => handleZoom(-0.1)}>Zoom -</button>
+                            <button onClick={() => handleZoom(100)}>Zoom +</button>
+                            <button onClick={() => handleZoom(-100)}>Zoom -</button>
                         </div>
                     </div>
                 </div>
