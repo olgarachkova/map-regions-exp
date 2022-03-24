@@ -2,7 +2,7 @@ import './App.scss';
 
 import React, { useState, useEffect } from 'react';
 import District from './District';
-import { latlngToPx } from './func';
+import { getDistanceFromLatLngInKm, latlngToPx } from './func';
 
 import districts from '../mid/districts.json';
 //import regions_nsk from '../mid/regions_nsk.json';
@@ -76,6 +76,18 @@ export function App(props: IAppProps) {
     }
 
     if (regions) {
+
+
+        /*let coords1 = regions.map(region => region.coords[0]);
+        let coordsTest = coords1[0];
+        let coordsTestCutted = [coordsTest[0]];
+        for (let i = 1; i < coordsTest.length; i++) {
+            if (getDistanceFromLatLngInKm({ lat: coordsTest[i][1], lng: coordsTest[i][0] }, { lat: coordsTestCutted[coordsTestCutted.length - 1][1], lng: coordsTestCutted[coordsTestCutted.length - 1][0] }) > 10) {
+
+                coordsTestCutted.push(coordsTest[i]);
+            }
+        }
+        console.log(coordsTestCutted);*/
 
         let riverCoords;
         if (typeof river.geojson.coordinates === 'string') {

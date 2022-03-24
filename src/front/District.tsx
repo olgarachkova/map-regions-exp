@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { IDistrict, latlngToPx } from './func';
+import { getDistanceFromLatLngInKm, IDistrict, latlngToPx } from './func';
 
-export function District(props: IDistrict) {
+export function District(props) {
     let { coords, lineType, mapLatLngBounds, pixelDims, cssClassName } = props;
 
     let geoPoints;
@@ -10,17 +10,42 @@ export function District(props: IDistrict) {
     let polygonPoints = [];
 
     if (lineType === 'Polygon') {
-        geoPoints = coords[0].map(item => {
+        let coordsTest = coords[0];
+
+        let coordsTestCutted = [coordsTest[0]];
+        for (let i = 1; i < coordsTest.length; i++) {
+            console.log(coordsTest[i])
+
+            if (getDistanceFromLatLngInKm({ lat: coordsTest[i][1], lng: coordsTest[i][0] }, { lat: coordsTestCutted[coordsTestCutted.length - 1][1], lng: coordsTestCutted[coordsTestCutted.length - 1][0] }) > 10) {
+                coordsTestCutted.push(coordsTest[i]);
+            }
+        }
+
+
+        geoPoints = coordsTestCutted.map(item => {
             return latlngToPx({ lat: item[1], lng: item[0] }, pixelDims, mapLatLngBounds);
         }).join(' ');
 
         polygonPoints.push(geoPoints);
     } else {
+
         coords.forEach((crds) => {
-            geoPoints = crds[0].map(item => {
+
+            let coordsTest = crds[0];
+            let coordsTestCutted = [coordsTest[0]];
+            for (let i = 1; i < coordsTest.length; i++) {
+                if (getDistanceFromLatLngInKm({ lat: coordsTest[i][1], lng: coordsTest[i][0] }, { lat: coordsTestCutted[coordsTestCutted.length - 1][1], lng: coordsTestCutted[coordsTestCutted.length - 1][0] }) > 10) {
+
+                    coordsTestCutted.push(coordsTest[i]);
+                }
+            }
+
+            //console.log(coordsTestCutted);
+
+            geoPoints = coordsTestCutted.map(item => {
                 return latlngToPx({ lat: item[1], lng: item[0] }, pixelDims, mapLatLngBounds);
             }).join(' ');
-
+            //console.log(geoPoints);
             polygonPoints.push(geoPoints);
         });
     }
