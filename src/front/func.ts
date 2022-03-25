@@ -26,7 +26,7 @@ export interface IBBox {
     lngMax: number
 }
 
-export interface IDistrict {
+/*export interface IDistrict {
     coords: IPolyline | IMultiPolyline,
     lineType: 'Polygon' | 'MultiPolygon'
     pixelDims: {
@@ -36,7 +36,29 @@ export interface IDistrict {
     mapLatLngBounds: IBBox,
     setInfo: any,
     cssClassName: string
+}*/
+
+interface IBaseDistrict {
+    pixelDims: {
+        width: number,
+        height: number
+    },
+    mapLatLngBounds: IBBox,
+    setInfo: any,
+    cssClassName: string
 }
+
+interface IPolygonDistrict {
+    lineType: 'Polygon'
+    coords: IPolyline
+}
+
+interface IMultiPolygonDistrict {
+    lineType: 'MultiPolygon'
+    coords: IMultiPolyline
+}
+
+export type IDistrict = IBaseDistrict & (IPolygonDistrict | IMultiPolygonDistrict);
 
 export function latlngToPx(
     point: TPointObj,
@@ -71,3 +93,23 @@ export function getDistanceFromLatLngInKm(point1: TPointObj, point2: TPointObj) 
 }
 
 
+export function cutPoints(coords: Array<TPointArr>) {
+    let coordsCutted = [coords[0]];
+    for (let i = 1; i < coords.length; i++) {
+
+        if (getDistanceFromLatLngInKm(
+            {
+                lat: coords[i][1],
+                lng: coords[i][0]
+            },
+            {
+                lat: coordsCutted[coordsCutted.length - 1][1],
+                lng: coordsCutted[coordsCutted.length - 1][0]
+            }
+        ) > 1) {
+            coordsCutted.push(coords[i]);
+        }
+    }
+
+    return coordsCutted;
+}
