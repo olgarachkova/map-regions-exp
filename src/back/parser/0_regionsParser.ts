@@ -43,17 +43,17 @@ async function main() {
             let geojson = one.geojson;
 
             coords = JSON.stringify(geojson.coordinates);
-            
+
             let q = `
-UPDATE border_region 
-SET 
-coords = ${sql(coords)},
-type = ${sql(geojson.type)},
-bbLatMin = ${sql(one.boundingbox[0])},
-bbLatMax = ${sql(one.boundingbox[1])},
-bbLngMin = ${sql(one.boundingbox[2])},
-bbLngMax = ${sql(one.boundingbox[3])}
-WHERE regionId = ${row['regionId']}`;
+                        UPDATE border_region 
+                        SET 
+                        coords = ${sql(coords)},
+                        type = ${sql(geojson.type)},
+                        bbLatMin = ${sql(one.boundingbox[0])},
+                        bbLatMax = ${sql(one.boundingbox[1])},
+                        bbLngMin = ${sql(one.boundingbox[2])},
+                        bbLngMax = ${sql(one.boundingbox[3])}
+                        WHERE regionId = ${row['regionId']}`;
 
             let resql = await stmt.exec(q);
             await stmt.commit();
