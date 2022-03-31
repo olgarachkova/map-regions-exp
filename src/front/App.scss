@@ -5,7 +5,8 @@
     //height: 1000px;
     //width: 1500px;
     //transform: perspective(300px) rotateX(15deg);
-    
+    border: 1px solid;
+    overflow: hidden;
 }
 
 .App-header {
@@ -37,7 +38,12 @@
 .district-select {
     fill: rgba(255, 0, 0, 0.4);
     stroke: red;
-    stroke-width: 5;
+    stroke-width: 1;
+}
+
+.districtForRegion {
+    fill: transparent;
+    stroke: black;
 }
 
 .region {
@@ -46,7 +52,7 @@
 }
 
 .svg {
-    border: 1px solid;
+    //border: 1px solid;
     //transform-origin: 0 0;
 }
 

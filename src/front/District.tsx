@@ -3,7 +3,7 @@ import React from 'react';
 import { cutPoints, IDistrict, latlngToPx, TPointArr } from './func';
 
 export function District(props: IDistrict) {
-    let { coords, lineType, mapLatLngBounds, pixelDims, cssClassName } = props;
+    let { coords, lineType, mapLatLngBounds, pixelDims, cssClassName, style = {} } = props;
 
     let geoPoints;
 
@@ -44,6 +44,7 @@ export function District(props: IDistrict) {
                     points={points}
                     onClick={handleClick}
                     className={cssClassName}
+                    style={style}
                 >
                     {/* <title>{geoInfo}</title> */}
                 </polygon>)}

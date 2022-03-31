@@ -36,6 +36,9 @@ export function App(props: IAppProps) {
     const [scale, setScale] = useState(1);
     const [width, setWidth] = useState(cartWidth);
     const [height, setHeight] = useState(cartHeight);
+    const [districtOpacity, setDistrictOpacity] = useState(0);
+    const [translateY, setTranslateY] = useState(0);
+    const [translateX, setTranslateX] = useState(0);
 
     let pixelDims = { width, height };
 
@@ -71,23 +74,13 @@ export function App(props: IAppProps) {
     }
 
     const handleZoom = (add: number): void => {
-        setWidth(prev => prev + add);
-        setHeight(prev => prev + add * heightCoef);
+        //setWidth(prev => prev + add);
+        //setHeight(prev => prev + add * heightCoef);
+        setScale(prev => prev + add * 0.001);
+        setDistrictOpacity(prev => prev + add * 0.001);
     }
 
     if (regions) {
-
-
-        /*let coords1 = regions.map(region => region.coords[0]);
-        let coordsTest = coords1[0];
-        let coordsTestCutted = [coordsTest[0]];
-        for (let i = 1; i < coordsTest.length; i++) {
-            if (getDistanceFromLatLngInKm({ lat: coordsTest[i][1], lng: coordsTest[i][0] }, { lat: coordsTestCutted[coordsTestCutted.length - 1][1], lng: coordsTestCutted[coordsTestCutted.length - 1][0] }) > 10) {
-
-                coordsTestCutted.push(coordsTest[i]);
-            }
-        }
-        console.log(coordsTestCutted);*/
 
         let riverCoords;
         if (typeof river.geojson.coordinates === 'string') {
@@ -112,6 +105,9 @@ export function App(props: IAppProps) {
                     className="App"
                     onClick={handleClick}
                     onWheel={(e: React.SyntheticEvent<EventTarget>) => {
+                        console.log(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+                        setTranslateX(prev => prev + e.deltaX * 0.1)
+                        setTranslateY(prev => prev + e.deltaY * 0.1)
                         handleZoom(e.deltaY);
                     }}
                     style={{
@@ -125,7 +121,11 @@ export function App(props: IAppProps) {
                         height={cartHeight}
                         className='svg'
                         style={{
-                            transform: `perspective(300px) rotateX(${rotateX}deg) scale(${scale})`,
+                            transform: `perspective(300px) 
+                                        rotateX(${rotateX}deg) 
+                                        scale(${scale})
+                                        translateY(${translateY}%)
+                                        translateX(${translateX}%)`,
                         }}
                     >
                         <filter id='inset-shadow' data-iconmelon='filter:96c25f4e7a8a5b39d6df22c349dbaf39' >
@@ -232,6 +232,31 @@ export function App(props: IAppProps) {
                             />
                         })}
 
+                        {Object.keys(districtsForRegion).map((id) => {
+                            let data = districtsForRegion[id];
+
+                            if (data.coords) {
+                                let coords;
+                                if (typeof data.coords === 'string') {
+                                    coords = JSON.parse(data.coords);
+                                } else {
+                                    coords = data.coords;
+                                }
+
+                                return <District
+                                    coords={coords}
+                                    lineType={data.objectType}
+                                    pixelDims={pixelDims}
+                                    mapLatLngBounds={mapLatLngBounds}
+                                    cssClassName='districtForRegion'
+                                    setInfo={setInfo}
+                                    style={{
+                                        strokeOpacity: `${districtOpacity}`,
+                                    }}
+                                />
+                            }
+                        })}
+
                         {riverPolygonPoints.map((points, idx) =>
                             <polyline
                                 points={points}
@@ -241,16 +266,18 @@ export function App(props: IAppProps) {
                         )
                         }
 
+
+
                     </svg>
+                </div>
+                <div>
                     <div>
-                        <div>
-                            <button onClick={handleRotate(1)}>Rotate +</button>
-                            <button onClick={handleRotate(-1)}>Rotate -</button>
-                        </div>
-                        <div>
-                            <button onClick={() => handleZoom(100)}>Zoom +</button>
-                            <button onClick={() => handleZoom(-100)}>Zoom -</button>
-                        </div>
+                        <button onClick={handleRotate(1)}>Rotate +</button>
+                        <button onClick={handleRotate(-1)}>Rotate -</button>
+                    </div>
+                    <div>
+                        <button onClick={() => handleZoom(100)}>Zoom +</button>
+                        <button onClick={() => handleZoom(-100)}>Zoom -</button>
                     </div>
                 </div>
             </>

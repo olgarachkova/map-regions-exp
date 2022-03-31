@@ -46,6 +46,7 @@ interface IBaseDistrict {
     mapLatLngBounds: IBBox,
     setInfo: any,
     cssClassName: string
+    style?: object
 }
 
 interface IPolygonDistrict {
@@ -112,4 +113,8 @@ export function cutPoints(coords: Array<TPointArr>) {
     }
 
     return coordsCutted;
+}
+
+export function latlngtoRound() {
+
 }
