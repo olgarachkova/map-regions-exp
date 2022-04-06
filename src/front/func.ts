@@ -45,8 +45,17 @@ interface IBaseDistrict {
     },
     mapLatLngBounds: IBBox,
     setInfo: any,
-    cssClassName: string
-    style?: object
+    cssClassName: string,
+    bbLatMin: number,
+    bbLatMax: number,
+    bbLngMin: number,
+    bbLngMax: number,
+    style?: object,
+    setScale?: any,
+    setTranslateY?: any,
+    setTranslateX?: any,
+    setDistrictOpacity?: any,
+    regionName?: string,
 }
 
 interface IPolygonDistrict {

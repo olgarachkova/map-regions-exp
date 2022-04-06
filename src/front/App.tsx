@@ -36,7 +36,7 @@ export function App(props: IAppProps) {
     const [scale, setScale] = useState(1);
     const [width, setWidth] = useState(cartWidth);
     const [height, setHeight] = useState(cartHeight);
-    const [districtOpacity, setDistrictOpacity] = useState(0);
+    const [districtOpacity, setDistrictOpacity] = useState('none');
     const [translateY, setTranslateY] = useState(0);
     const [translateX, setTranslateX] = useState(0);
 
@@ -49,7 +49,7 @@ export function App(props: IAppProps) {
     }, [regionId]);
 
 
-    const handleClick = (e: React.SyntheticEvent<EventTarget>): void => {
+    /*const handleClick = (e: React.SyntheticEvent<EventTarget>): void => {
         if (e.target.classList.contains('district')) {
             if (e.ctrlKey) {
                 e.target.classList.add('district-select');
@@ -67,6 +67,12 @@ export function App(props: IAppProps) {
             });
             setSelectedDistricts([]);
         }
+    }*/
+
+    const handleClick = (e: React.SyntheticEvent<EventTarget>): void => {
+        /*handleZoom(300);
+        setTranslateY(100);
+        setTranslateX(100);*/
     }
 
     const handleRotate = (add: number) => (): void => {
@@ -74,10 +80,7 @@ export function App(props: IAppProps) {
     }
 
     const handleZoom = (add: number): void => {
-        //setWidth(prev => prev + add);
-        //setHeight(prev => prev + add * heightCoef);
         setScale(prev => prev + add * 0.001);
-        setDistrictOpacity(prev => prev + add * 0.001);
     }
 
     if (regions) {
@@ -105,9 +108,9 @@ export function App(props: IAppProps) {
                     className="App"
                     onClick={handleClick}
                     onWheel={(e: React.SyntheticEvent<EventTarget>) => {
-                        console.log(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
-                        setTranslateX(prev => prev + e.deltaX * 0.1)
-                        setTranslateY(prev => prev + e.deltaY * 0.1)
+                        /*console.log(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+                        setTranslateX(prev => prev + e.deltaY * 1.5)
+                        setTranslateY(prev => prev + e.deltaY)*/
                         handleZoom(e.deltaY);
                     }}
                     style={{
@@ -124,8 +127,9 @@ export function App(props: IAppProps) {
                             transform: `perspective(300px) 
                                         rotateX(${rotateX}deg) 
                                         scale(${scale})
-                                        translateY(${translateY}%)
-                                        translateX(${translateX}%)`,
+                                        translate(${translateX}px, ${translateY}px)
+                                        `,
+                            transition: 'transform 2s'
                         }}
                     >
                         <filter id='inset-shadow' data-iconmelon='filter:96c25f4e7a8a5b39d6df22c349dbaf39' >
@@ -223,12 +227,21 @@ export function App(props: IAppProps) {
                             }
 
                             return <District
+                                regionName={region.regionName}
                                 coords={coords}
                                 lineType={region.objectType}
                                 pixelDims={pixelDims}
                                 mapLatLngBounds={mapLatLngBounds}
                                 cssClassName='district'
+                                bbLatMin={region.bbLatMin}
+                                bbLatMax={region.bbLatMax}
+                                bbLngMin={region.bbLngMin}
+                                bbLngMax={region.bbLngMax}
                                 setInfo={setInfo}
+                                setScale={setScale}
+                                setTranslateY={setTranslateY}
+                                setTranslateX={setTranslateX}
+                                setDistrictOpacity={setDistrictOpacity}
                             />
                         })}
 
@@ -249,9 +262,14 @@ export function App(props: IAppProps) {
                                     pixelDims={pixelDims}
                                     mapLatLngBounds={mapLatLngBounds}
                                     cssClassName='districtForRegion'
+                                    bbLatMin={data.bbLatMin}
+                                    bbLatMax={data.bbLatMax}
+                                    bbLngMin={data.bbLngMin}
+                                    bbLngMax={data.bbLngMax}
                                     setInfo={setInfo}
                                     style={{
-                                        strokeOpacity: `${districtOpacity}`,
+                                        stroke: `${districtOpacity}`,
+                                        transition: 'stroke 2s'
                                     }}
                                 />
                             }

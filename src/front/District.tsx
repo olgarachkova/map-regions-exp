@@ -3,11 +3,14 @@ import React from 'react';
 import { cutPoints, IDistrict, latlngToPx, TPointArr } from './func';
 
 export function District(props: IDistrict) {
-    let { coords, lineType, mapLatLngBounds, pixelDims, cssClassName, style = {} } = props;
+    let { regionName, coords, lineType, mapLatLngBounds, pixelDims, cssClassName, bbLatMin, bbLatMax, bbLngMin, bbLngMax, style = {}, setScale, setTranslateY, setTranslateX, setDistrictOpacity } = props;
 
     let geoPoints;
 
     let polygonPoints = [];
+
+    let cartHeight = 507.373;
+    let cartWidth = 1500;
 
     if (lineType === 'Polygon') {
         coords.forEach((crd) => {
@@ -33,17 +36,25 @@ export function District(props: IDistrict) {
     // const geoInfo = geo[0].display_name;
 
     const handleClick = (e) => {
-        // setInfo(geoInfo);
+        const min = latlngToPx({ lat: bbLatMin, lng: bbLngMin }, pixelDims, mapLatLngBounds);
+        const max = latlngToPx({ lat: bbLatMax, lng: bbLngMax }, pixelDims, mapLatLngBounds);
+        setScale((Math.min(cartWidth / Math.abs(max[0] - min[0]), cartHeight / Math.abs(max[1] - min[1]))) * 0.8);
+        setTranslateX(cartWidth / 2 - (max[0] + min[0]) / 2);
+        setTranslateY(cartHeight / 2 - (max[1] + min[1]) / 2);
+
+        regionName === "Новосибирская область" ? setDistrictOpacity('black') : setDistrictOpacity('none');
     }
 
     return (
-        <g>
+        <g
+            className={cssClassName}
+            onClick={handleClick}
+        >
             {polygonPoints.map((points, i) =>
                 <polygon
                     key={i}
                     points={points}
-                    onClick={handleClick}
-                    className={cssClassName}
+
                     style={style}
                 >
                     {/* <title>{geoInfo}</title> */}
