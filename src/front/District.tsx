@@ -3,7 +3,7 @@ import React from 'react';
 import { cutPoints, IDistrict, latlngToPx, TPointArr } from './func';
 
 export function District(props: IDistrict) {
-    let { regionName, coords, lineType, mapLatLngBounds, pixelDims, cssClassName, bbLatMin, bbLatMax, bbLngMin, bbLngMax, style = {}, setScale, setTranslateY, setTranslateX, setDistrictOpacity } = props;
+    let { regionName, coords, lineType, mapLatLngBounds, pixelDims, cssClassName, bbLatMin, bbLatMax, bbLngMin, bbLngMax, style = {}, setInfo, setScale, setTranslateY, setTranslateX, setDistrictOpacity } = props;
 
     let geoPoints;
 
@@ -36,6 +36,8 @@ export function District(props: IDistrict) {
     // const geoInfo = geo[0].display_name;
 
     const handleClick = (e) => {
+        setInfo()
+
         const min = latlngToPx({ lat: bbLatMin, lng: bbLngMin }, pixelDims, mapLatLngBounds);
         const max = latlngToPx({ lat: bbLatMax, lng: bbLngMax }, pixelDims, mapLatLngBounds);
         setScale((Math.min(cartWidth / Math.abs(max[0] - min[0]), cartHeight / Math.abs(max[1] - min[1]))) * 0.8);
@@ -43,6 +45,8 @@ export function District(props: IDistrict) {
         setTranslateY(cartHeight / 2 - (max[1] + min[1]) / 2);
 
         regionName === "Новосибирская область" ? setDistrictOpacity('black') : setDistrictOpacity('none');
+
+        setInfo(regionName);
     }
 
     return (

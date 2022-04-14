@@ -5,10 +5,12 @@ import District from './District';
 import River from './River';
 import { getDistanceFromLatLngInKm, latlngToPx } from './func';
 
+import russia from '../mid/russia.json';
 import districts from '../mid/districts.json';
 //import regions_nsk from '../mid/regions_nsk.json';
 import regionsRussia from '../mid/regions.json';
 import riversRussia from '../mid/rivers.json';
+import Country from './Country';
 
 interface IAppProps {
     regionId: number
@@ -29,10 +31,10 @@ export function App(props: IAppProps) {
     const cartHeight = cartWidth * heightCoef;
 
     const [districtsForRegion, setDistrictsForRegion] = useState(null);
+    const [country, setCountry] = useState(null);
     const [regions, setRegions] = useState(null);
     const [rivers, setRivers] = useState(null);
     const [info, setInfo] = useState('');
-    const [selectedDistricts, setSelectedDistricts] = useState([]);
     const [rotateX, setRotateX] = useState(0);
     const [scale, setScale] = useState(1);
     const [width, setWidth] = useState(cartWidth);
@@ -40,11 +42,13 @@ export function App(props: IAppProps) {
     const [districtOpacity, setDistrictOpacity] = useState('none');
     const [translateY, setTranslateY] = useState(0);
     const [translateX, setTranslateX] = useState(0);
+    const [administrativeLayerOn, setAdministrativeLayerOn] = useState(false);
     const [waterLayerOn, setWaterLayerOn] = useState(false);
 
     let pixelDims = { width, height };
 
     useEffect(() => {
+        setCountry(russia);
         setDistrictsForRegion(districts);
         setRegions(Object.values(regionsRussia));
         setRivers(riversRussia);
@@ -58,10 +62,23 @@ export function App(props: IAppProps) {
         setScale(prev => prev + add * 0.001);
     }
 
+    const handleReset = () => {
+        setScale(1);
+        setDistrictOpacity('none');
+        setInfo('');
+        setRotateX(0);
+        setTranslateX(0);
+        setTranslateY(0);
+    }
+
     if (regions) {
 
-
-
+        let countryCoords;
+        if (typeof country.geojson.coordinates === 'string') {
+            countryCoords = JSON.parse(country.geojson.coordinates);
+        } else {
+            countryCoords = country.geojson.coordinates;
+        }
 
         return (
             <>
@@ -175,7 +192,15 @@ export function App(props: IAppProps) {
                             <feDropShadow dx="4" dy="4" stdDeviation="0" floodColor="black" floodOpacity="0.5" />
                         </filter>
 
-                        {regions.map((region) => {
+                        <Country
+                            coords={countryCoords}
+                            lineType={country.type}
+                            mapLatLngBounds={mapLatLngBounds}
+                            pixelDims={pixelDims}
+                        />
+
+
+                        {administrativeLayerOn && regions.map((region) => {
                             let coords;
                             if (typeof region.coords === 'string') {
                                 coords = JSON.parse(region.coords);
@@ -239,12 +264,9 @@ export function App(props: IAppProps) {
                             />
                         })
                         }
-
-
-
-
                     </svg>
                 </div>
+                <div><p>{info}</p></div>
                 <div>
                     <div>
                         <button onClick={handleRotate(1)}>Rotate +</button>
@@ -255,6 +277,10 @@ export function App(props: IAppProps) {
                         <button onClick={() => handleZoom(-100)}>Zoom -</button>
                     </div>
                     <div>
+                        <button onClick={handleReset}>Scale reset</button>
+                    </div>
+                    <div>
+                        <button onClick={() => setAdministrativeLayerOn(prev => !prev)}>Administrative layer</button>
                         <button onClick={() => setWaterLayerOn(prev => !prev)}>Water layer</button>
                     </div>
                 </div>
