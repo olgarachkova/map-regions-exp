@@ -2,12 +2,13 @@ import './App.scss';
 
 import React, { useState, useEffect } from 'react';
 import District from './District';
+import River from './River';
 import { getDistanceFromLatLngInKm, latlngToPx } from './func';
 
 import districts from '../mid/districts.json';
 //import regions_nsk from '../mid/regions_nsk.json';
-import regions_russia from '../mid/regions.json';
-import irtysh from '../mid/irtysh.json';
+import regionsRussia from '../mid/regions.json';
+import riversRussia from '../mid/rivers.json';
 
 interface IAppProps {
     regionId: number
@@ -29,7 +30,7 @@ export function App(props: IAppProps) {
 
     const [districtsForRegion, setDistrictsForRegion] = useState(null);
     const [regions, setRegions] = useState(null);
-    const [river, setRiver] = useState(null);
+    const [rivers, setRivers] = useState(null);
     const [info, setInfo] = useState('');
     const [selectedDistricts, setSelectedDistricts] = useState([]);
     const [rotateX, setRotateX] = useState(0);
@@ -39,41 +40,15 @@ export function App(props: IAppProps) {
     const [districtOpacity, setDistrictOpacity] = useState('none');
     const [translateY, setTranslateY] = useState(0);
     const [translateX, setTranslateX] = useState(0);
+    const [waterLayerOn, setWaterLayerOn] = useState(false);
 
     let pixelDims = { width, height };
 
     useEffect(() => {
         setDistrictsForRegion(districts);
-        setRegions(Object.values(regions_russia));
-        setRiver(...irtysh);
+        setRegions(Object.values(regionsRussia));
+        setRivers(riversRussia);
     }, [regionId]);
-
-
-    /*const handleClick = (e: React.SyntheticEvent<EventTarget>): void => {
-        if (e.target.classList.contains('district')) {
-            if (e.ctrlKey) {
-                e.target.classList.add('district-select');
-                setSelectedDistricts([...selectedDistricts, e.target]);
-            } else {
-                selectedDistricts.forEach(element => {
-                    element.classList.remove('district-select');
-                });
-                e.target.classList.add('district-select');
-                setSelectedDistricts([e.target]);
-            }
-        } else {
-            selectedDistricts.forEach(element => {
-                element.classList.remove('district-select');
-            });
-            setSelectedDistricts([]);
-        }
-    }*/
-
-    const handleClick = (e: React.SyntheticEvent<EventTarget>): void => {
-        /*handleZoom(300);
-        setTranslateY(100);
-        setTranslateX(100);*/
-    }
 
     const handleRotate = (add: number) => (): void => {
         setRotateX(prev => prev + add);
@@ -85,32 +60,14 @@ export function App(props: IAppProps) {
 
     if (regions) {
 
-        let riverCoords;
-        if (typeof river.geojson.coordinates === 'string') {
-            riverCoords = JSON.parse(river.geojson.coordinates);
-        } else {
-            riverCoords = river.geojson.coordinates;
-        }
 
-        let riverPolygonPoints = [];
-        riverCoords.forEach((crds) => {
-            let riverGeoPoints = crds.map(item => {
-                return latlngToPx({ lat: item[1], lng: item[0] }, pixelDims, mapLatLngBounds);
-            }).join(' ');
-
-            riverPolygonPoints.push(riverGeoPoints);
-        });
 
 
         return (
             <>
                 <div
                     className="App"
-                    onClick={handleClick}
                     onWheel={(e: React.SyntheticEvent<EventTarget>) => {
-                        /*console.log(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
-                        setTranslateX(prev => prev + e.deltaY * 1.5)
-                        setTranslateY(prev => prev + e.deltaY)*/
                         handleZoom(e.deltaY);
                     }}
                     style={{
@@ -274,15 +231,15 @@ export function App(props: IAppProps) {
                                 />
                             }
                         })}
-
-                        {riverPolygonPoints.map((points, idx) =>
-                            <polyline
-                                points={points}
-                                key={'river' + idx}
-                                className='river'
+                        {waterLayerOn && rivers.map((river) => {
+                            return <River
+                                river={river}
+                                mapLatLngBounds={mapLatLngBounds}
+                                pixelDims={pixelDims}
                             />
-                        )
+                        })
                         }
+
 
 
 
@@ -296,6 +253,9 @@ export function App(props: IAppProps) {
                     <div>
                         <button onClick={() => handleZoom(100)}>Zoom +</button>
                         <button onClick={() => handleZoom(-100)}>Zoom -</button>
+                    </div>
+                    <div>
+                        <button onClick={() => setWaterLayerOn(prev => !prev)}>Water layer</button>
                     </div>
                 </div>
             </>
