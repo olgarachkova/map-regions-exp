@@ -44,6 +44,7 @@ export function App(props: IAppProps) {
     const [translateX, setTranslateX] = useState(0);
     const [administrativeLayerOn, setAdministrativeLayerOn] = useState(false);
     const [waterLayerOn, setWaterLayerOn] = useState(false);
+    const [isAnswerConfirmed, setIsAnswerConfirmed] = useState(false);
 
     let pixelDims = { width, height };
 
@@ -54,21 +55,13 @@ export function App(props: IAppProps) {
         setRivers(riversRussia);
     }, [regionId]);
 
-    const handleRotate = (add: number) => (): void => {
-        setRotateX(prev => prev + add);
-    }
-
     const handleZoom = (add: number): void => {
         setScale(prev => prev + add * 0.001);
     }
 
-    const handleReset = () => {
-        setScale(1);
-        setDistrictOpacity('none');
-        setInfo('');
-        setRotateX(0);
-        setTranslateX(0);
-        setTranslateY(0);
+    const handleTestAnswer = () => {
+        setIsAnswerConfirmed(true);
+        console.log(isAnswerConfirmed);
     }
 
     if (regions) {
@@ -200,7 +193,7 @@ export function App(props: IAppProps) {
                         />
 
 
-                        {administrativeLayerOn && regions.map((region) => {
+                        {regions.map((region) => {
                             let coords;
                             if (typeof region.coords === 'string') {
                                 coords = JSON.parse(region.coords);
@@ -266,23 +259,19 @@ export function App(props: IAppProps) {
                         }
                     </svg>
                 </div>
-                <div><p>{info}</p></div>
                 <div>
-                    <div>
-                        <button onClick={handleRotate(1)}>Rotate +</button>
-                        <button onClick={handleRotate(-1)}>Rotate -</button>
-                    </div>
-                    <div>
-                        <button onClick={() => handleZoom(100)}>Zoom +</button>
-                        <button onClick={() => handleZoom(-100)}>Zoom -</button>
-                    </div>
-                    <div>
-                        <button onClick={handleReset}>Scale reset</button>
-                    </div>
-                    <div>
-                        <button onClick={() => setAdministrativeLayerOn(prev => !prev)}>Administrative layer</button>
-                        <button onClick={() => setWaterLayerOn(prev => !prev)}>Water layer</button>
-                    </div>
+                    <p>Найдите на карте новосибирскую область</p>
+                    <button
+                        onClick={handleTestAnswer}
+                        disabled={isAnswerConfirmed}
+                    >
+                        подтвердить ответ
+                    </button>
+                    {isAnswerConfirmed &&
+                        <>
+                            {info === 'Новосибирская область' ? <p>Верно</p> : <p>Неверно</p>}
+                        </>
+                    }
                 </div>
             </>
         );

@@ -36,15 +36,13 @@ export function District(props: IDistrict) {
     // const geoInfo = geo[0].display_name;
 
     const handleClick = (e) => {
-        setInfo()
-
-        const min = latlngToPx({ lat: bbLatMin, lng: bbLngMin }, pixelDims, mapLatLngBounds);
+        /*const min = latlngToPx({ lat: bbLatMin, lng: bbLngMin }, pixelDims, mapLatLngBounds);
         const max = latlngToPx({ lat: bbLatMax, lng: bbLngMax }, pixelDims, mapLatLngBounds);
         setScale((Math.min(cartWidth / Math.abs(max[0] - min[0]), cartHeight / Math.abs(max[1] - min[1]))) * 0.8);
         setTranslateX(cartWidth / 2 - (max[0] + min[0]) / 2);
         setTranslateY(cartHeight / 2 - (max[1] + min[1]) / 2);
 
-        regionName === "Новосибирская область" ? setDistrictOpacity('black') : setDistrictOpacity('none');
+        regionName === "Новосибирская область" ? setDistrictOpacity('black') : setDistrictOpacity('none');*/
 
         setInfo(regionName);
     }
