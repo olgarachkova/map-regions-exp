@@ -45,6 +45,7 @@ interface IBaseDistrict {
     },
     mapLatLngBounds: IBBox,
     setInfo: any,
+    setHoverInfo?: any,
     cssClassName: string,
     bbLatMin: number,
     bbLatMax: number,

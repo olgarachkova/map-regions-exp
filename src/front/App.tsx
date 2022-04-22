@@ -10,6 +10,7 @@ import districts from '../mid/districts.json';
 //import regions_nsk from '../mid/regions_nsk.json';
 import regionsRussia from '../mid/regions.json';
 import riversRussia from '../mid/rivers.json';
+import irtysh from '../mid/irtysh.json';
 import Country from './Country';
 
 interface IAppProps {
@@ -35,6 +36,7 @@ export function App(props: IAppProps) {
     const [regions, setRegions] = useState(null);
     const [rivers, setRivers] = useState(null);
     const [info, setInfo] = useState('');
+    const [hoverInfo, setHoverInfo] = useState('');
     const [rotateX, setRotateX] = useState(0);
     const [scale, setScale] = useState(1);
     const [width, setWidth] = useState(cartWidth);
@@ -43,8 +45,10 @@ export function App(props: IAppProps) {
     const [translateY, setTranslateY] = useState(0);
     const [translateX, setTranslateX] = useState(0);
     const [administrativeLayerOn, setAdministrativeLayerOn] = useState(false);
-    const [waterLayerOn, setWaterLayerOn] = useState(false);
+    const [waterLayerOn, setWaterLayerOn] = useState(true);
     const [isAnswerConfirmed, setIsAnswerConfirmed] = useState(false);
+    const [riverPoints, setRiverPoints] = useState([]);
+    const [testResult, setTestResult] = useState(false);
 
     let pixelDims = { width, height };
 
@@ -59,10 +63,55 @@ export function App(props: IAppProps) {
         setScale(prev => prev + add * 0.001);
     }
 
+    let riverTestCoords = [];
+
+    irtysh.map((riverpart) => {
+        if (riverpart.geojson.type === "MultiLineString") {
+            riverTestCoords.push(...(riverpart.geojson.coordinates.flat()))
+        }
+        if (riverpart.geojson.type === "LineString") {
+            riverTestCoords.push(...riverpart.geojson.coordinates)
+        }
+        if (riverpart.geojson.type === "Point") {
+            riverTestCoords.push(riverpart.geojson.coordinates)
+        }
+    });
+
+    const riverTestCoordsPx = riverTestCoords.map(coord => latlngToPx({ lat: coord[1], lng: coord[0] }, pixelDims, mapLatLngBounds));
+    const testDiff = 50;
+    const pointsDiff = 10;
+
+    const handleClick = (event) => {
+        const currentPoint = [event.nativeEvent.offsetX, event.nativeEvent.offsetY];
+        if (riverPoints.length < 3) {
+            const isSame = riverPoints.find(point => {
+                const distance = Math.sqrt((point[0] - currentPoint[0]) ^ 2 + (point[1] - currentPoint[1]) ^ 2)
+                return distance < pointsDiff;
+            })
+            if (!isSame) {
+                setRiverPoints(prev => [...prev, currentPoint])
+            } else {
+                console.log('no');
+            };
+        }
+    }
+
     const handleTestAnswer = () => {
         setIsAnswerConfirmed(true);
-        console.log(isAnswerConfirmed);
+
+        if (riverPoints.length === 3) {
+            riverPoints.forEach(point => {
+                const result = riverTestCoordsPx.find(coord => {
+                    const distance = Math.sqrt((point[0] - coord[0]) ^ 2 + (point[1] - coord[1]) ^ 2)
+                    return distance < testDiff;
+                });
+                if (result) setTestResult(true);
+            })
+        }
     }
+
+
+
 
     if (regions) {
 
@@ -72,6 +121,7 @@ export function App(props: IAppProps) {
         } else {
             countryCoords = country.geojson.coordinates;
         }
+
 
         return (
             <>
@@ -98,6 +148,7 @@ export function App(props: IAppProps) {
                                         `,
                             transition: 'transform 2s'
                         }}
+                        onClick={handleClick}
                     >
                         <filter id='inset-shadow' data-iconmelon='filter:96c25f4e7a8a5b39d6df22c349dbaf39' >
                             <feOffset
@@ -213,6 +264,7 @@ export function App(props: IAppProps) {
                                 bbLngMin={region.bbLngMin}
                                 bbLngMax={region.bbLngMax}
                                 setInfo={setInfo}
+                                setHoverInfo={setHoverInfo}
                                 setScale={setScale}
                                 setTranslateY={setTranslateY}
                                 setTranslateX={setTranslateX}
@@ -257,10 +309,13 @@ export function App(props: IAppProps) {
                             />
                         })
                         }
+
+                        {riverPoints.map(point => <circle cx={point[0]} cy={point[1]} r="5" />)}
                     </svg>
                 </div>
+                <div>hover: {hoverInfo}</div>
                 <div>
-                    <p>Найдите на карте новосибирскую область</p>
+                    <p>Отметьте на карте 3 точки, через которые протекает Иртыш</p>
                     <button
                         onClick={handleTestAnswer}
                         disabled={isAnswerConfirmed}
@@ -269,7 +324,7 @@ export function App(props: IAppProps) {
                     </button>
                     {isAnswerConfirmed &&
                         <>
-                            {info === 'Новосибирская область' ? <p>Верно</p> : <p>Неверно</p>}
+                            {testResult ? <p>Верно</p> : <p>Неверно</p>}
                         </>
                     }
                 </div>
