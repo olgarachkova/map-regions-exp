@@ -35,6 +35,7 @@ export function App(props: IAppProps) {
     const [regions, setRegions] = useState(null);
     const [rivers, setRivers] = useState(null);
     const [info, setInfo] = useState('');
+    const [hoverInfo, setHoverInfo] = useState('');
     const [rotateX, setRotateX] = useState(0);
     const [scale, setScale] = useState(1);
     const [width, setWidth] = useState(cartWidth);
@@ -45,6 +46,7 @@ export function App(props: IAppProps) {
     const [administrativeLayerOn, setAdministrativeLayerOn] = useState(false);
     const [waterLayerOn, setWaterLayerOn] = useState(false);
     const [isAnswerConfirmed, setIsAnswerConfirmed] = useState(false);
+    const [selectedDistrict, setSelectedDistrict] = useState('');
 
     let pixelDims = { width, height };
 
@@ -63,6 +65,7 @@ export function App(props: IAppProps) {
         setIsAnswerConfirmed(true);
         console.log(isAnswerConfirmed);
     }
+
 
     if (regions) {
 
@@ -213,42 +216,17 @@ export function App(props: IAppProps) {
                                 bbLngMin={region.bbLngMin}
                                 bbLngMax={region.bbLngMax}
                                 setInfo={setInfo}
+                                setHoverInfo={setHoverInfo}
                                 setScale={setScale}
                                 setTranslateY={setTranslateY}
                                 setTranslateX={setTranslateX}
                                 setDistrictOpacity={setDistrictOpacity}
+                                selectedDistrict={selectedDistrict}
+                                setSelectedDistrict={setSelectedDistrict}
+
                             />
                         })}
 
-                        {Object.keys(districtsForRegion).map((id) => {
-                            let data = districtsForRegion[id];
-
-                            if (data.coords) {
-                                let coords;
-                                if (typeof data.coords === 'string') {
-                                    coords = JSON.parse(data.coords);
-                                } else {
-                                    coords = data.coords;
-                                }
-
-                                return <District
-                                    coords={coords}
-                                    lineType={data.objectType}
-                                    pixelDims={pixelDims}
-                                    mapLatLngBounds={mapLatLngBounds}
-                                    cssClassName='districtForRegion'
-                                    bbLatMin={data.bbLatMin}
-                                    bbLatMax={data.bbLatMax}
-                                    bbLngMin={data.bbLngMin}
-                                    bbLngMax={data.bbLngMax}
-                                    setInfo={setInfo}
-                                    style={{
-                                        stroke: `${districtOpacity}`,
-                                        transition: 'stroke 2s'
-                                    }}
-                                />
-                            }
-                        })}
                         {waterLayerOn && rivers.map((river) => {
                             return <River
                                 river={river}
@@ -259,6 +237,7 @@ export function App(props: IAppProps) {
                         }
                     </svg>
                 </div>
+                <div>hover region: {hoverInfo}</div>
                 <div>
                     <p>Найдите на карте новосибирскую область</p>
                     <button

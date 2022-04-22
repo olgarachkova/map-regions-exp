@@ -1,16 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { cutPoints, IDistrict, latlngToPx, TPointArr } from './func';
 
 export function District(props: IDistrict) {
-    let { regionName, coords, lineType, mapLatLngBounds, pixelDims, cssClassName, bbLatMin, bbLatMax, bbLngMin, bbLngMax, style = {}, setInfo, setScale, setTranslateY, setTranslateX, setDistrictOpacity } = props;
-
+    let { regionName, coords, lineType, mapLatLngBounds, pixelDims, cssClassName, bbLatMin, bbLatMax, bbLngMin, bbLngMax, style = {}, setInfo, setHoverInfo, setScale, setTranslateY, setTranslateX, setDistrictOpacity, setSelectedDistrict, selectedDistrict } = props;
     let geoPoints;
-
     let polygonPoints = [];
 
-    let cartHeight = 507.373;
-    let cartWidth = 1500;
+    const [currentCssClassName, setCurrentCssClassName] = useState(cssClassName);
 
     if (lineType === 'Polygon') {
         coords.forEach((crd) => {
@@ -33,33 +30,28 @@ export function District(props: IDistrict) {
         });
     }
 
-    // const geoInfo = geo[0].display_name;
-
     const handleClick = (e) => {
-        /*const min = latlngToPx({ lat: bbLatMin, lng: bbLngMin }, pixelDims, mapLatLngBounds);
-        const max = latlngToPx({ lat: bbLatMax, lng: bbLngMax }, pixelDims, mapLatLngBounds);
-        setScale((Math.min(cartWidth / Math.abs(max[0] - min[0]), cartHeight / Math.abs(max[1] - min[1]))) * 0.8);
-        setTranslateX(cartWidth / 2 - (max[0] + min[0]) / 2);
-        setTranslateY(cartHeight / 2 - (max[1] + min[1]) / 2);
-
-        regionName === "Новосибирская область" ? setDistrictOpacity('black') : setDistrictOpacity('none');*/
-
         setInfo(regionName);
+        setSelectedDistrict(regionName);
     }
+
+    const handleHover = () => {
+        setHoverInfo(regionName);
+    }
+
 
     return (
         <g
-            className={cssClassName}
+            className={selectedDistrict === regionName ? 'district-select' : cssClassName}
             onClick={handleClick}
+            onMouseOver={handleHover}
         >
             {polygonPoints.map((points, i) =>
                 <polygon
                     key={i}
                     points={points}
-
                     style={style}
                 >
-                    {/* <title>{geoInfo}</title> */}
                 </polygon>)}
         </g>
     );
