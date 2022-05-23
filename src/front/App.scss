@@ -1,8 +1,10 @@
 .App {
+    margin: 100px;
     text-align: center;
     display: flex;
     height: 1000px;
     width: 1500px;
+    transform: perspective(300px) rotateX(15deg);
 }
 
 .App-header {
@@ -28,6 +30,8 @@
 
 .district:hover {
     fill: #61dafb;
+    // fill: rgba(255, 0, 0, 1);
+    // filter:url(#color-shadow);
 }
 
 .district-select {
@@ -40,6 +44,11 @@
 .region {
     fill: transparent;
     stroke: blueviolet;
+}
+
+.country {
+    fill: transparent;
+    stroke: red;
 }
 
 .svg {
