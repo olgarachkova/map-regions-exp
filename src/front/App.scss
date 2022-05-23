@@ -1,8 +1,10 @@
 .App {
+    margin: 100px;
     text-align: center;
     display: flex;
     height: 1000px;
     width: 1500px;
+    transform: perspective(300px) rotateX(15deg);
 }
 
 .App-header {
@@ -24,11 +26,14 @@
     fill: transparent;
     stroke: black;
     transition: 2s linear;
+    // transition: 1s ease-in-out;
 }
 
 .district:hover {
     animation: colorswitch 5s linear infinite alternate;
     stroke-width: 5;
+    // fill: rgba(255, 0, 0, 1);
+    // filter:url(#color-shadow);
 }
 
 .district-select {
@@ -42,41 +47,46 @@
     stroke: blueviolet;
 }
 
+.country {
+    fill: transparent;
+    stroke: red;
+}
+
 .svg {
     border: 1px solid;
 }
 
 @keyframes colorswitch {
     0% {
-      fill: red;
-      stroke: red;
+        fill: red;
+        stroke: red;
     }
     15% {
-      fill: orange;
-      stroke: orange;
+        fill: orange;
+        stroke: orange;
     }
     30% {
-      fill: yellow;
-      stroke: yellow;
+        fill: yellow;
+        stroke: yellow;
     }
     45% {
-      fill: green;
-      stroke: green;
+        fill: green;
+        stroke: green;
     }
     60% {
-      fill: aqua;
-      stroke: aqua;
+        fill: aqua;
+        stroke: aqua;
     }
     75% {
-      fill: blue;
-      stroke: blue;
+        fill: blue;
+        stroke: blue;
     }
     90% {
-      fill: purple;
-      stroke: purple;
+        fill: purple;
+        stroke: purple;
     }
     100% {
-      fill: magenta;
-      stroke: magenta;
+        fill: magenta;
+        stroke: magenta;
     }
-  }
+}
