@@ -26,6 +26,8 @@ export interface IBBox {
     lngMax: number
 }
 
+export type TScaleMode = 'country' | 'region';
+
 export interface ICoordsBaseRaw {
     coords: string
 }
@@ -48,13 +50,13 @@ export interface IGeoSquareRaw extends ICoordsBaseRaw, ICoordsSecondary {
 }
 
 export interface IGeoSquareToShow extends IGeoSquare {
-    coords: IPolyline | IMultiPolyline,
+    objectType: 'country' | 'region' | 'district',
     pixelDims: {
         width: number,
         height: number
     },
     mapLatLngBounds: IBBox,
-    setInfo: any,
+    handleClick: () => void,
     cssClassName: string
 }
 
