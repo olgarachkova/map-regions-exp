@@ -3,9 +3,6 @@ import React from 'react';
 import { IGeoSquareToShow, latlngToPx } from './func';
 
 export default function GeoSquareObj(props: IGeoSquareToShow) {
-    console.log(13718182);
-    // debugger;
-
     let { coords, type, mapLatLngBounds, pixelDims, cssClassName } = props;
 
     let geoPoints;
@@ -28,18 +25,12 @@ export default function GeoSquareObj(props: IGeoSquareToShow) {
         });
     }
 
-    // const geoInfo = geo[0].display_name;
-
-    const handleClick = (e) => {
-        // setInfo(geoInfo);
-    }
-
     return <g>
         {polygonPoints.map((points, i) =>
             <polygon
                 key={i}
                 points={points}
-                onClick={handleClick}
+                onClick={props.handleClick}
                 className={cssClassName}
             >
                 {/* <title>{geoInfo}</title> */}

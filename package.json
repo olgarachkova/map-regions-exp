@@ -10,7 +10,8 @@
     "xlsx": "",
     "hull.js": "",
     "@types/hull.js": "",
-    "react-fade-in": ""
+    "react-fade-in": "",
+    "react-router-dom": ""
   },
   "devDependencies": {
     "npm-run-all": "",
@@ -50,7 +51,7 @@
     "buildbacksrc": "tsc -p tsconfig.back.json",
     "build": "npm-run-all -p buildback buildfront",
     "watch": "npm-run-all -p watchback watchfront",
-    "open": "start http://localhost:8340",
+    "open": "start http://localhost:8341",
     "serveropen": "npm-run-all -p server open",
     "startbuild": "npm-run-all build serveropen"
   },

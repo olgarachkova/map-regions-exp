@@ -19,6 +19,9 @@ async function main() {
     let stmt = await statement.getStmt();
     const httpServer = createServer(app);
 
+    let pth = path.resolve(__dirname + '/../../../dest/front'); // @@## как с этим быть
+    app.use(express.static(pth));
+
     app.get('/', function (req, res) {
         res.sendFile(path.resolve(__dirname + '/../../front/index.html'));
 
@@ -26,18 +29,27 @@ async function main() {
         res.setHeader('Access-Control-Allow-Headers', 'origin, content-type, accept');
     });
 
-    app.get('/country/(:id)', async function (req, res) {
-        let row = await stmt.fetchRow("SELECT id, name, type, coords FROM country WHERE id = " + sql(req.params.id));
-        if (row) {
-            res.json(row);
+    app.get('/regions', async function (req, res) {
+        let rows = await stmt.fetchList("SELECT * FROM border_region"); //  LIMIT 5 // отладочный 
+        // let row = await stmt.fetchRow("SELECT regionId, name FROM regions");
+        if (rows) {
+            res.json(rows);
         } else {
 
         }
     });
 
-    app.get('/regions', async function (req, res) {
-        let row = await stmt.fetchList("SELECT * FROM border_region");
-        // let row = await stmt.fetchRow("SELECT regionId, name FROM regions");
+    app.get('/(:id)', function (req, res) {
+        if (/\d+/.test(req.params.id)) {
+            res.sendFile(path.resolve(__dirname + '/../../front/index.html'));
+
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Headers', 'origin, content-type, accept');
+        }
+    });
+
+    app.get('/country/(:id)', async function (req, res) {
+        let row = await stmt.fetchRow("SELECT id, name, type, coords FROM country WHERE id = " + sql(req.params.id));
         if (row) {
             res.json(row);
         } else {
@@ -97,8 +109,6 @@ async function main() {
     //         res.end('0');
     //     }
     // });
-
-    app.use(express.static(path.resolve(__dirname + '/../../front')));
 
     httpServer.listen(process.env.PORT);
 }
