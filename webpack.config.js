@@ -1,5 +1,7 @@
+const webpack = require('webpack');
 const CopyPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const dotenv = require('dotenv');
 
 const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent');
 
@@ -12,6 +14,11 @@ let entries = {
 const shouldUseSourceMapForProduction = false;
 
 const relPathToStatic = '/_media/react-part/';
+
+dotenv.config();
+const environmentVariables = [
+    "PORT",
+];
 
 module.exports = {
     mode: 'development',
@@ -109,6 +116,7 @@ module.exports = {
         }),
         new MiniCssExtractPlugin({
             filename: './index.css',
-        })
+        }),
+        new webpack.EnvironmentPlugin(environmentVariables),
     ],
 };

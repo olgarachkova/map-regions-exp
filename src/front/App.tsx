@@ -14,7 +14,7 @@ import { Location, useLocation, useNavigate, NavigateFunction } from "react-rout
 import { Link } from "react-router-dom";
 import { Routes, Route, useParams } from "react-router-dom";
 
-const host = 'http://localhost:8341/'; // @@## !!!!
+const host = `http://localhost:${process.env.PORT}/`; // @@## !!!!
 
 interface IAppProps {
     // regionId?: number,
@@ -74,7 +74,7 @@ function getBoundsFromElementsSquareHier(elementsSquareHier: IGeoSquareRaw[][]) 
 
 function getGeoObjectType(scaleMode: TScaleMode, i: number) {
     let res;
-    
+
     if (scaleMode === 'country') {
         if (i === 0) {
             res = 'country'
@@ -220,7 +220,7 @@ export function SrcApp(props: IAppProps) {
                         height={height}
                         className='svg'
                     >
-                        <filter id='inset-shadow' data-iconmelon='filter:96c25f4e7a8a5b39d6df22c349dbaf39' >{/* @@## what is it? artifact?*/} 
+                        <filter id='inset-shadow' data-iconmelon='filter:96c25f4e7a8a5b39d6df22c349dbaf39' >{/* @@## what is it? artifact?*/}
                             <feOffset
                                 dx='0'
                                 dy='0'
@@ -357,7 +357,7 @@ export function SrcApp(props: IAppProps) {
                                         console.log('++++squareObj.type');
                                         console.log(squareObj.type);
                                         console.log(i);
-        
+
                                         if (scaleMode === 'country' && objectType === 'region') {
                                             props.navigate('' + squareObj.regionId) // string in need 
                                         }
