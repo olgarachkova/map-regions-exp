@@ -29,14 +29,50 @@ export interface IBBox {
 /*export interface IDistrict {
     coords: IPolyline | IMultiPolyline,
     lineType: 'Polygon' | 'MultiPolygon'
+}*/
+
+export type TScaleMode = 'country' | 'region';
+
+export interface ICoordsBaseRaw {
+    coords: string
+}
+
+export interface ICoordsBase {
+    coords: IPolyline | IMultiPolyline
+}
+
+export interface ICoordsSecondary {
+    type: 'Polygon' | 'MultiPolygon',
+    mapLatLngBounds?: IBBox
+}
+
+export interface IGeoSquare extends ICoordsBase, ICoordsSecondary {
+
+}
+
+export interface IGeoSquareRaw extends ICoordsBaseRaw, ICoordsSecondary {
+
+}
+
+export interface IGeoSquareToShow extends IGeoSquare {
+    objectType: 'country' | 'region' | 'district',
+    scaleMode?: TScaleMode;
+    setScaleMode: any;
     pixelDims: {
         width: number,
         height: number
     },
+    bbLatMin: number,
+    bbLatMax: number,
+    bbLngMin: number,
+    bbLngMax: number,
     mapLatLngBounds: IBBox,
-    setInfo: any,
-    cssClassName: string
-}*/
+    handleClick: any,
+    cssClassName: string,
+    setScale: any,
+    setTranslateX: any,
+    setTranslateY: any,
+}
 
 interface IBaseDistrict {
     pixelDims: {
@@ -103,7 +139,7 @@ export function getDistanceFromLatLngInKm(point1: TPointObj, point2: TPointObj) 
 }
 
 
-export function cutPoints(coords: Array<TPointArr>) {
+export function cutPoints(coords: Array<TPointArr>, diffKm: number) {
     let coordsCutted = [coords[0]];
     for (let i = 1; i < coords.length; i++) {
 
@@ -116,14 +152,9 @@ export function cutPoints(coords: Array<TPointArr>) {
                 lat: coordsCutted[coordsCutted.length - 1][1],
                 lng: coordsCutted[coordsCutted.length - 1][0]
             }
-        ) > 1) {
+        ) > diffKm) {
             coordsCutted.push(coords[i]);
         }
     }
-
     return coordsCutted;
-}
-
-export function latlngtoRound() {
-
 }

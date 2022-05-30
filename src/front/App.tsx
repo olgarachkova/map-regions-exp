@@ -1,58 +1,142 @@
 import './App.scss';
 
 import React, { useState, useEffect } from 'react';
-import District from './District';
-import River from './River';
-import { getDistanceFromLatLngInKm, latlngToPx } from './func';
+import { latlngToPx, IGeoSquare, IGeoSquareRaw, TScaleMode } from './func';
 
-import russia from '../mid/russia.json';
-import districts from '../mid/districts.json';
+// import districts from '../mid/districts.json';
 //import regions_nsk from '../mid/regions_nsk.json';
-import regionsRussia from '../mid/regions.json';
-import riversRussia from '../mid/rivers.json';
-import Country from './Country';
+// import regions_russia from '../mid/regions.json';
+//import irtysh from '../mid/irtysh.json';
+import GeoSquareObj from './GeoSquareObj';
+
+import { BrowserRouter } from "react-router-dom";
+import { Location, useLocation, useNavigate, NavigateFunction } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { Routes, Route, useParams } from "react-router-dom";
+
+const host = `http://localhost:${process.env.PORT}/`;
 
 interface IAppProps {
-    regionId: number
+    // regionId?: number,
+    location: Location,
+    navigate: NavigateFunction
 }
 
-export function App(props: IAppProps) {
+function getBoundsFromElementsSquareHier(elementsSquareHier: IGeoSquareRaw[][]) {
+    let res = {
+        latMin: Infinity,
+        latMax: -Infinity,
+        lngMin: Infinity,
+        lngMax: -Infinity
+    };
 
-    let regionId = props.regionId;
-    let [bbLatMin, bbLatMax, bbLngMin, bbLngMax] = [41, 82.1, 19, 180];
-    let lngSpan = bbLngMax - bbLngMin;
-    let latSpan = bbLatMax - bbLatMin;
+    function workLayer(arr) {
+        arr.forEach(item => {
+            let lat = item[1];
+            let lng = item[0];
 
+            if (lat < res.latMin) {
+                res.latMin = lat
+            }
 
+            if (lat > res.latMax) {
+                res.latMax = lat
+            }
 
-    const mapLatLngBounds = { latMin: bbLatMin, latMax: bbLatMax, lngMin: bbLngMin, lngMax: bbLngMax };
-    const cartWidth = 1500;
-    const heightCoef = latSpan / lngSpan / Math.cos(Math.PI / 180 * bbLatMin)
-    const cartHeight = cartWidth * heightCoef;
+            if (lng < res.lngMin) {
+                res.lngMin = lng
+            }
 
-    const [districtsForRegion, setDistrictsForRegion] = useState(null);
-    const [country, setCountry] = useState(null);
-    const [regions, setRegions] = useState(null);
-    const [rivers, setRivers] = useState(null);
+            if (lng > res.lngMax) {
+                res.lngMax = lng
+            }
+        });
+    }
+
+    for (let i = 0; i < 1; i++) { // пока только с первого слоя
+        let layer = elementsSquareHier[i]
+
+        for (let j = 0; j < layer.length; j++) { // 
+            let obj = layer[j]
+            let coords = JSON.parse(obj.coords);
+            if (obj.type === 'Polygon') {
+                workLayer(coords[0])
+            } else {
+                coords.forEach((partCoords) => {
+                    workLayer(partCoords[0])
+                });
+            }
+        }
+    }
+
+    return res;
+}
+
+function getGeoObjectType(scaleMode: TScaleMode, i: number) {
+    let res;
+
+    if (scaleMode === 'country') {
+        if (i === 0) {
+            res = 'country'
+        } else { // = 1
+            res = 'region'
+        }
+    } else {
+        if (i === 0) {
+            res = 'region'
+        } else { // = 1
+            res = 'district'
+        }
+    }
+
+    return res
+}
+
+function getCSSClassNameFromIndex(scaleMode: TScaleMode, i: number) {
+    let res = getGeoObjectType(scaleMode, i)
+    return res
+}
+
+const withRouter = (WrapperComponent: React.ComponentClass<{ location: Location, navigate: NavigateFunction }>) => () => {
+    const location = useLocation();
+    const navigate = useNavigate();
+    return <WrapperComponent location={location} navigate={navigate} />;
+};
+
+export function SrcApp(props: IAppProps) {
+    // let regionId = props.regionId;
+    console.log(41432);
+
+    const params = useParams();
+    let regionId = params.id;
+
+    let handleNavChange = (e: any) => {
+        props.navigate(e.target.value)
+    }
+
+    const [elementsSquareHier, setElementsSqaureHier] = useState<IGeoSquareRaw[][]>([null, null]);
     const [info, setInfo] = useState('');
+    const [scaleMode, setScaleMode] = useState<TScaleMode>(regionId ? 'region' : 'country');
+
     const [rotateX, setRotateX] = useState(0);
     const [scale, setScale] = useState(1);
-    const [width, setWidth] = useState(cartWidth);
-    const [height, setHeight] = useState(cartHeight);
-    const [districtOpacity, setDistrictOpacity] = useState('none');
     const [translateY, setTranslateY] = useState(0);
     const [translateX, setTranslateX] = useState(0);
-    const [administrativeLayerOn, setAdministrativeLayerOn] = useState(false);
-    const [waterLayerOn, setWaterLayerOn] = useState(false);
 
-    let pixelDims = { width, height };
 
-    useEffect(() => {
-        setCountry(russia);
-        setDistrictsForRegion(districts);
-        setRegions(Object.values(regionsRussia));
-        setRivers(riversRussia);
-    }, [regionId]);
+    function fillData(urlArr: string[]) {
+        urlArr.forEach((url, i) => {
+            fetch(url).then(resp => {
+                resp.json().then(json => {
+                    setElementsSqaureHier((oldElementsSquareHier) => {
+                        let newElementsSquareHier = [...oldElementsSquareHier];
+                        newElementsSquareHier[i] = Array.isArray(json) ? json : [json];
+                        return newElementsSquareHier;
+                    })
+                });
+            });
+        })
+    }
 
     const handleRotate = (add: number) => (): void => {
         setRotateX(prev => prev + add);
@@ -64,38 +148,65 @@ export function App(props: IAppProps) {
 
     const handleReset = () => {
         setScale(1);
-        setDistrictOpacity('none');
         setInfo('');
         setRotateX(0);
         setTranslateX(0);
         setTranslateY(0);
     }
 
-    if (regions) {
-
-        let countryCoords;
-        if (typeof country.geojson.coordinates === 'string') {
-            countryCoords = JSON.parse(country.geojson.coordinates);
+    useEffect(() => {
+        // РАБОТА С СЕРВЕРОМ
+        let urls;
+        if (regionId) {
+            urls = [host + 'region/' + regionId, host + 'districts/' + regionId];
         } else {
-            countryCoords = country.geojson.coordinates;
+            urls = [host + 'country/192', host + 'regions'];
+        }
+        fillData(urls);
+    }, [regionId]);
+
+    // let [bbLatMin, bbLatMax, bbLngMin, bbLngMax] = [41, 82.1, 19, 180]; // Russia
+
+    const width = 1500;
+    const height = 800;
+    let pixelDims = { width, height };
+
+
+    let isReady = true;
+
+    for (let i = 0; i < elementsSquareHier.length; i++) {
+        isReady = elementsSquareHier[i] && isReady;
+    }
+
+    if (isReady) {
+        let mapLatLngBounds = getBoundsFromElementsSquareHier(elementsSquareHier);
+
+        let lngSpan = mapLatLngBounds.lngMax - mapLatLngBounds.lngMin;
+        let latSpan = mapLatLngBounds.latMax - mapLatLngBounds.latMin;
+
+        handleNavChange = (e: any) => {
+            debugger;
+            props.navigate(e.target.value)
         }
 
         return (
             <>
+                {/* <select
+                    onChange={handleNavChange}
+                >
+                    <option value={10} key={10}>Новосибирск</option>
+                    <option value={20} key={20}>Оренбург</option>
+                </select> */}
                 <div
                     className="App"
                     onWheel={(e: React.SyntheticEvent<EventTarget>) => {
                         handleZoom(e.deltaY);
                     }}
-                    style={{
-                        height: `${cartHeight}px`,
-                        width: `${cartWidth}px`
-                    }}
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        width={cartWidth}
-                        height={cartHeight}
+                        width={width}
+                        height={height}
                         className='svg'
                         style={{
                             transform: `perspective(300px) 
@@ -106,7 +217,7 @@ export function App(props: IAppProps) {
                             transition: 'transform 2s'
                         }}
                     >
-                        <filter id='inset-shadow' data-iconmelon='filter:96c25f4e7a8a5b39d6df22c349dbaf39' >
+                        <filter id='inset-shadow' data-iconmelon='filter:96c25f4e7a8a5b39d6df22c349dbaf39' >{/* @@## what is it? artifact?*/}
                             <feOffset
                                 dx='0'
                                 dy='0'
@@ -192,81 +303,77 @@ export function App(props: IAppProps) {
                             <feDropShadow dx="4" dy="4" stdDeviation="0" floodColor="black" floodOpacity="0.5" />
                         </filter>
 
-                        <Country
-                            coords={countryCoords}
-                            lineType={country.type}
-                            mapLatLngBounds={mapLatLngBounds}
-                            pixelDims={pixelDims}
-                        />
+                        <text>Qwerty</text>
 
-
-                        {administrativeLayerOn && regions.map((region) => {
-                            let coords;
-                            if (typeof region.coords === 'string') {
-                                coords = JSON.parse(region.coords);
-                            } else { // for tests
-                                coords = region.coords;
-                            }
-
-                            return <District
-                                regionName={region.regionName}
-                                coords={coords}
-                                lineType={region.objectType}
-                                pixelDims={pixelDims}
-                                mapLatLngBounds={mapLatLngBounds}
-                                cssClassName='district'
-                                bbLatMin={region.bbLatMin}
-                                bbLatMax={region.bbLatMax}
-                                bbLngMin={region.bbLngMin}
-                                bbLngMax={region.bbLngMax}
-                                setInfo={setInfo}
-                                setScale={setScale}
-                                setTranslateY={setTranslateY}
-                                setTranslateX={setTranslateX}
-                                setDistrictOpacity={setDistrictOpacity}
-                            />
-                        })}
-
-                        {Object.keys(districtsForRegion).map((id) => {
-                            let data = districtsForRegion[id];
-
-                            if (data.coords) {
+                        {elementsSquareHier.map((layer, i) => {
+                            return layer.map((squareObj, j) => {
                                 let coords;
-                                if (typeof data.coords === 'string') {
-                                    coords = JSON.parse(data.coords);
-                                } else {
-                                    coords = data.coords;
+                                if (typeof squareObj.coords === 'string') {
+                                    coords = JSON.parse(squareObj.coords);
+                                } else { // for tests // @@##
+                                    coords = squareObj.coords;
                                 }
 
-                                return <District
+                                if (!coords) { // @@## такого не должно быть при норм. базе
+                                    return null;
+                                }
+
+                                let polygonPoints = [];
+
+                                if (squareObj.type === 'Polygon') {
+                                    let geoPoints = coords[0].map(item => {
+                                        return latlngToPx({ lat: item[1], lng: item[0] }, pixelDims, mapLatLngBounds);
+                                    }).join(' ');
+
+                                    polygonPoints.push(geoPoints);
+                                } else {
+                                    coords.forEach((crds) => {
+                                        let geoPoints = crds[0].map(item => {
+                                            return latlngToPx({ lat: item[1], lng: item[0] }, pixelDims, mapLatLngBounds);
+                                        }).join(' ');
+
+                                        polygonPoints.push(geoPoints);
+                                    });
+                                }
+
+                                let cssClassName = getCSSClassNameFromIndex(scaleMode, i)
+                                let objectType = getGeoObjectType(scaleMode, i)
+
+                                // key={i+'-'+j}
+
+                                // const geoInfo = geo[0].display_name;
+
+                                return <GeoSquareObj
+                                    objectType={objectType}
+                                    scaleMode={scaleMode}
                                     coords={coords}
-                                    lineType={data.objectType}
+                                    type={squareObj.type}
+                                    bbLatMin={squareObj.bbLatMin}
+                                    bbLatMax={squareObj.bbLatMax}
+                                    bbLngMin={squareObj.bbLngMin}
+                                    bbLngMax={squareObj.bbLngMax}
                                     pixelDims={pixelDims}
                                     mapLatLngBounds={mapLatLngBounds}
-                                    cssClassName='districtForRegion'
-                                    bbLatMin={data.bbLatMin}
-                                    bbLatMax={data.bbLatMax}
-                                    bbLngMin={data.bbLngMin}
-                                    bbLngMax={data.bbLngMax}
-                                    setInfo={setInfo}
-                                    style={{
-                                        stroke: `${districtOpacity}`,
-                                        transition: 'stroke 2s'
+                                    cssClassName={cssClassName}
+                                    setScaleMode={setScaleMode}
+                                    handleClick={() => {
+                                        console.log('++++squareObj.type');
+                                        console.log(squareObj.type);
+                                        console.log(i);
+
+                                        if (scaleMode === 'country' && objectType === 'region') {
+                                            props.navigate('' + squareObj.regionId) // string in need 
+                                        }
                                     }}
+                                    setScale={setScale}
+                                    setTranslateX={setTranslateX}
+                                    setTranslateY={setTranslateY}
                                 />
-                            }
+                            })
                         })}
-                        {waterLayerOn && rivers.map((river) => {
-                            return <River
-                                river={river}
-                                mapLatLngBounds={mapLatLngBounds}
-                                pixelDims={pixelDims}
-                            />
-                        })
-                        }
                     </svg>
+
                 </div>
-                <div><p>{info}</p></div>
                 <div>
                     <div>
                         <button onClick={handleRotate(1)}>Rotate +</button>
@@ -279,10 +386,6 @@ export function App(props: IAppProps) {
                     <div>
                         <button onClick={handleReset}>Scale reset</button>
                     </div>
-                    <div>
-                        <button onClick={() => setAdministrativeLayerOn(prev => !prev)}>Administrative layer</button>
-                        <button onClick={() => setWaterLayerOn(prev => !prev)}>Water layer</button>
-                    </div>
                 </div>
             </>
         );
@@ -292,4 +395,27 @@ export function App(props: IAppProps) {
     }
 }
 
-export default App;
+const PreApp = withRouter(SrcApp);
+
+// function Exp() {
+//     return (
+//       <div>{54223}</div>
+//     );
+// }
+
+// function ExpCh() {
+//     return (
+//       <div>{useParams().id}</div>
+//     );
+// }
+
+export default function App() {
+    return <BrowserRouter>
+        <Routes>
+            <Route path="/" element={<PreApp />} />
+            <Route path="/" element={<PreApp />}>
+                <Route path=":id" element={<PreApp />} />
+            </Route>
+        </Routes>
+    </BrowserRouter>
+}
