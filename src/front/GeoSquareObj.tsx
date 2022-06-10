@@ -55,18 +55,20 @@ export default function GeoSquareObj(props: IGeoSquareToShow) {
     }
 
     const handleGeoClick = (e) => {
+        handleClick();
+
         const min = latlngToPx({ lat: bbLatMin, lng: bbLngMin }, pixelDims, mapLatLngBounds);
         const max = latlngToPx({ lat: bbLatMax, lng: bbLngMax }, pixelDims, mapLatLngBounds);
         setScale((Math.min(pixelDims.width / Math.abs(max[0] - min[0]), pixelDims.height / Math.abs(max[1] - min[1]))));
         setTranslateX(pixelDims.width / 2 - (max[0] + min[0]) / 2);
         setTranslateY(pixelDims.height / 2 - (max[1] + min[1]) / 2);
 
-        handleClick();//nav to region
 
-        setScaleMode('region');
+
+        /*setScaleMode('region');
         setScale(1);
         setTranslateX(0);
-        setTranslateY(0);
+        setTranslateY(0);*/
     }
 
     return <g
@@ -79,7 +81,6 @@ export default function GeoSquareObj(props: IGeoSquareToShow) {
                 //onClick={props.handleClick}
                 className={cssClassName}
             >
-                {/* <title>{geoInfo}</title> */}
             </polygon>)}
     </g>
 }

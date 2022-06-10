@@ -105,7 +105,7 @@ const withRouter = (WrapperComponent: React.ComponentClass<{ location: Location,
 
 export function SrcApp(props: IAppProps) {
     // let regionId = props.regionId;
-    console.log(41432);
+    //console.log(41432);
 
     const params = useParams();
     let regionId = params.id;
@@ -122,6 +122,8 @@ export function SrcApp(props: IAppProps) {
     const [scale, setScale] = useState(1);
     const [translateY, setTranslateY] = useState(0);
     const [translateX, setTranslateX] = useState(0);
+    const [currentRegionId, setCurrentRegionId] = useState(0);
+    const [currentObjectType, setCurrentObjectType] = useState(0);
 
 
     function fillData(urlArr: string[]) {
@@ -152,6 +154,17 @@ export function SrcApp(props: IAppProps) {
         setRotateX(0);
         setTranslateX(0);
         setTranslateY(0);
+    }
+
+    const handleTransitionEnd = () => {
+
+        /*setScale(1);
+        setTranslateX(0);
+        setTranslateY(0);*/
+        if (scaleMode === 'country' && currentObjectType === 'region') {
+            props.navigate('' + currentRegionId) // string in need 
+            setScaleMode('region');
+        }
     }
 
     useEffect(() => {
@@ -205,6 +218,7 @@ export function SrcApp(props: IAppProps) {
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
+                        onTransitionEnd={handleTransitionEnd}
                         width={width}
                         height={height}
                         className='svg'
@@ -357,13 +371,18 @@ export function SrcApp(props: IAppProps) {
                                     cssClassName={cssClassName}
                                     setScaleMode={setScaleMode}
                                     handleClick={() => {
-                                        console.log('++++squareObj.type');
+                                        /*console.log('++++squareObj.type');
                                         console.log(squareObj.type);
-                                        console.log(i);
+                                        console.log(i);*/
 
-                                        if (scaleMode === 'country' && objectType === 'region') {
+                                        setCurrentRegionId(squareObj.regionId);
+                                        setCurrentObjectType('region');
+                                        console.log('squareObj.regionId' + squareObj.regionId);
+                                        console.log('current regionid' + currentRegionId);
+
+                                        /*if (scaleMode === 'country' && objectType === 'region') {
                                             props.navigate('' + squareObj.regionId) // string in need 
-                                        }
+                                        }*/
                                     }}
                                     setScale={setScale}
                                     setTranslateX={setTranslateX}
