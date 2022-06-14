@@ -4,22 +4,22 @@ REM SETLOCAL EnableDelayedExpansion
 cd %~dp0
 
 SET dirBase=%~dp0\src\back\
-SET destFile=%dirBase%\ignoreVCS\ignoreCfg.ts
+SET dstFile=%dirBase%\ignoreVCS\ignoreCfg.ts
 SET srcFile=%dirBase%\local\ignoreCfg.ts
 
-IF NOT EXIST "%destFile%" (
-     copy "%srcFile%" "%destFile%"
+IF NOT EXIST "%dstFile%" (
+     copy "%srcFile%" "%dstFile%"
 )
 
 CALL init_1_npmi_src.bat
 
 cd %~dp0
 
-rmdir dest /s/q
+rmdir dst /s/q
 REM CALL npm run build
 REM Errors are expected at this stage!!
 
-CALL init_2_npmi_dest.bat
+CALL init_2_npmi_dst.bat
 
 cd %~dp0
 

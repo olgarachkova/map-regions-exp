@@ -43,20 +43,20 @@
       "type": "node",
       "request": "launch",
       "name": "index",
-      "program": "${workspaceFolder}/dest/jscore/core/index.js",
+      "program": "${workspaceFolder}/dst/jscore/core/index.js",
       "skipFiles": [
         "<node_internals>/**",
-        // "dest/**",
+        // "dst/**",
       ],
     },
     {
       "type": "node",
       "request": "launch",
       "name": "__current",
-      "program": "${workspaceFolder}/dest/back/parser/2_base.js",
+      "program": "${workspaceFolder}/dst/back/parser/2_base.js",
       "skipFiles": [
         "<node_internals>/**",
-        // "dest/**",
+        // "dst/**",
       ],
       "args": [
         "1",
@@ -67,7 +67,7 @@
       "type": "node",
       "request": "launch",
       "name": "1",
-      "program": "${workspaceFolder}/dest/back/1.js",
+      "program": "${workspaceFolder}/dst/back/1.js",
       "sourceMaps": true,
       "smartStep": true,
       "skipFiles": [
@@ -79,7 +79,7 @@
       "type": "node",
       "request": "launch",
       "name": "indexLocal",
-      "program": "${workspaceFolder}/dest/back/index.js",
+      "program": "${workspaceFolder}/dst/back/index.js",
       "sourceMaps": true,
       "smartStep": true,
       "skipFiles": [
@@ -91,7 +91,7 @@
       "type": "node",
       "request": "launch",
       "name": "## fronter",
-      "program": "${workspaceFolder}/dest/jscore/core/_helper/fronter.js",
+      "program": "${workspaceFolder}/dst/jscore/core/_helper/fronter.js",
       "sourceMaps": true,
       "smartStep": true,
       "skipFiles": [
