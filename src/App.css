@@ -2,20 +2,29 @@
   text-align: center;
 }
 
+.earth1 {
+  margin: auto;
+  width: 100%;
+}
+
 .earth {
   display: block;
-  position: absolute;
-  margin: auto;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  border: 1px solid black;
+  
+  /*position: absolute;
+  
+  top: 200;*/
+
   width: 808px;
   height: 808px;
   padding: 4px;
   stroke: #000;
   stroke-width: 1;
   fill: none;
+
+  transition: 1s ease;
+
+  margin: 0 auto
 }
 
 
@@ -71,4 +80,15 @@ transition-timing-function: ease;
 .region {
   fill: white;
   stroke: black;
+}
+
+.country {
+  fill: white;
+  stroke: black;
+  stroke-width: 3px;
+  transition: 1s ease;
+}
+
+.country:hover {
+  fill: red;
 }
