@@ -231,6 +231,13 @@ export function SrcApp(props: IAppProps) {
                             transition: 'transform 2s'
                         }}
                     >
+                        <defs>
+                            <linearGradient id="MyGradient">
+                                <stop offset="20%" stopColor="#FFF9ED" />
+                                <stop offset="80%" stopColor="#DBDBDB" />
+                            </linearGradient>
+                        </defs>
+
                         <filter id='inset-shadow' data-iconmelon='filter:96c25f4e7a8a5b39d6df22c349dbaf39' >{/* @@## what is it? artifact?*/}
                             <feOffset
                                 dx='0'
@@ -352,10 +359,6 @@ export function SrcApp(props: IAppProps) {
 
                                 let cssClassName = getCSSClassNameFromIndex(scaleMode, i)
                                 let objectType = getGeoObjectType(scaleMode, i)
-
-                                // key={i+'-'+j}
-
-                                // const geoInfo = geo[0].display_name;
 
                                 return <GeoSquareObj
                                     objectType={objectType}

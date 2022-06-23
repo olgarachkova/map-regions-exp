@@ -71,16 +71,29 @@ export default function GeoSquareObj(props: IGeoSquareToShow) {
         setTranslateY(0);*/
     }
 
-    return <g
-        onClick={handleGeoClick}
-    >
-        {polygonPoints.map((points, i) =>
-            <polygon
-                key={i}
-                points={points}
-                //onClick={props.handleClick}
-                className={cssClassName}
-            >
-            </polygon>)}
-    </g>
+    return <>
+        <g
+            className={"underList"}
+        >
+            {polygonPoints.map((points, i) =>
+                <polygon
+                    key={i}
+                    points={points}
+                    className={"under"}
+                >
+                </polygon>)}
+        </g>
+
+        <g
+            onClick={handleGeoClick}
+            className={cssClassName}
+        >
+            {polygonPoints.map((points, i) =>
+                <polygon
+                    key={i}
+                    points={points}
+                >
+                </polygon>)}
+        </g>
+    </>
 }
