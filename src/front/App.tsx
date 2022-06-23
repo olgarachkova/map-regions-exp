@@ -236,6 +236,25 @@ export function SrcApp(props: IAppProps) {
                                 <stop offset="20%" stopColor="#FFF9ED" />
                                 <stop offset="80%" stopColor="#DBDBDB" />
                             </linearGradient>
+
+                            <pattern id="pattern1"
+                                x="10" y="10" width="25" height="25"
+                                patternUnits="userSpaceOnUse"
+                            >
+
+                                <circle cx="10" cy="10" r="10" className='pattern1' />
+
+                            </pattern>
+
+                            <pattern id="pattern2"
+                                x="0" y="0" width="25" height="25"
+                                patternUnits="userSpaceOnUse"
+                                patternTransform="rotate(35)"
+                            >
+
+                                <rect x="0" y="15" width="50" height="50" className='pattern2' />
+
+                            </pattern>
                         </defs>
 
                         <filter id='inset-shadow' data-iconmelon='filter:96c25f4e7a8a5b39d6df22c349dbaf39' >{/* @@## what is it? artifact?*/}

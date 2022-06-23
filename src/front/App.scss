@@ -38,13 +38,13 @@
 }
 
 .district:hover {
-    fill: rgba(255, 0, 0, 1);
+    fill: url(#pattern2);
     filter:url(#color-shadow);
     
 }
 
 .district-select {
-    fill: rgba(255, 0, 0, 0.4);
+    fill: url(#pattern1);
     stroke: red;
     stroke-width: 1;
 }
