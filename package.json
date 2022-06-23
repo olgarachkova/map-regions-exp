@@ -10,8 +10,8 @@
     "xlsx": "",
     "hull.js": "",
     "@types/hull.js": "",
-    "react-fade-in": "",
-    "react-router-dom": ""
+    "react-router-dom": "",
+    "resolve-url-loader": ""
   },
   "devDependencies": {
     "npm-run-all": "",
@@ -39,38 +39,20 @@
     "@types/cors": ""
   },
   "scripts": {
+    "buildbacksrc": "tsc -p tsconfig.back.json",
     "watchbacksrc": "tsc -w -p tsconfig.back.json",
     "buildback": "npm-run-all -p buildbacksrc",
-    "watchfront": "npm-run-all -p watchfrontsrc",
     "watchback": "npm-run-all -p watchbacksrc",
+    "watchfront": "npm-run-all -p watchfrontsrc",
     "watchserv": "webpack-dev-server",
     "buildfrontsrc": "webpack",
     "buildfront": "npm-run-all -p buildfrontsrc",
     "watchfrontsrc": "webpack -w",
-    "server": "node dest/back/server/server.js",
-    "buildbacksrc": "tsc -p tsconfig.back.json",
+    "server": "node dst/back/server/server.js",
     "build": "npm-run-all -p buildback buildfront",
     "watch": "npm-run-all -p watchback watchfront",
     "open": "start http://localhost:8340",
     "serveropen": "npm-run-all -p server open",
     "startbuild": "npm-run-all build serveropen"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   }
 }

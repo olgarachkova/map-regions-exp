@@ -1,4 +1,5 @@
 const webpack = require('webpack');
+
 const CopyPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const dotenv = require('dotenv');
@@ -10,10 +11,6 @@ const path = require('path');
 let entries = {
     'index': './src/front/index.tsx',
 }
-
-const shouldUseSourceMapForProduction = false;
-
-const relPathToStatic = '/_media/react-part/';
 
 dotenv.config();
 const environmentVariables = [
@@ -43,6 +40,13 @@ module.exports = {
                         options: {
                             sourceMap: true
                         }
+                    },
+                    {
+                        loader: require.resolve('resolve-url-loader'), // apparently need to be exactly here 
+                        options: {
+                            sourceMap: true,
+                            // root: paths.appSrc, // ? should be undefined
+                        },
                     },
                     {
                         loader: 'sass-loader',
@@ -86,7 +90,7 @@ module.exports = {
         extensions: ['.tsx', '.ts', '.js']
     },
     output: {
-        path: path.resolve(__dirname, 'dest/front/'),
+        path: path.resolve(__dirname, 'dst/front/'),
         devtoolModuleFilenameTemplate(info) {
             return `file:///${info.absoluteResourcePath.replace(/\\/g, '/')}`;
         },
@@ -111,11 +115,11 @@ module.exports = {
     plugins: [
         new CopyPlugin({
             patterns: [
-                { from: "front/*.html", context: path.resolve(__dirname, "src"), to: path.resolve(__dirname, "dest") }, // only for isolate 
+                { from: "front/*.html", context: path.resolve(__dirname, "src"), to: path.resolve(__dirname, "dst") }, // only for isolate 
             ],
         }),
         new MiniCssExtractPlugin({
-            filename: './index.css',
+            filename: './style.css',
         }),
         new webpack.EnvironmentPlugin(environmentVariables),
     ],

@@ -19,7 +19,7 @@ async function main() {
     let stmt = await statement.getStmt();
     const httpServer = createServer(app);
 
-    let pth = path.resolve(__dirname + '/../../../dest/front'); // @@## как с этим быть
+    let pth = path.resolve(__dirname + '/../../../dst/front'); // @@## как с этим быть
     app.use(express.static(pth));
 
     app.get('/', function (req, res) {
